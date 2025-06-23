@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Proteção Solar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"></div>
+
+            <ul>
+                <li><a href="#">Gráficos</a></li> 
+                <li><a href="#clima">Clima x Câncer de Pele</a></li>
+                <li><a href="#cancer">Melanoma x Não Melanoma</a></li>
+                <li><a href="#prevencao">Prevenção</a></li>
+            </ul>
+        </nav>
+    </header>
+
+     <div id="alerta-uv"></div>
+
+    <main>
+        <section class="intro">
+            <div class="texto">
+                <div class="mini_introducao">
+                <h1>A exposição ao sol é inevitável.<br><span>Os cuidados, não.</span></h1> 
+            </div>
+                <p>O câncer de pele é o tipo <strong>mais comum</strong> no Brasil — e também um dos <strong>mais preveníveis</strong>.</p>
+                <p>Você sabia que a maioria dos casos poderia ser evitada com proteção adequada e diagnóstico precoce?</p>
+                <a href="#" id="openModalBtn" class="botao">A sua saúde começa com a informação.</a>
+            </div>
+            <div class="imagem-overlay">
+  <img src="{{ url_for('static', filename='imagens/praia.png') }}" alt="Descrição da imagem">
+  <div class="texto-overlay">
+    <p>Para que o protetor solar se torne eficaz, é preciso passar a quantidade adequeada - em torno de uma colher de chá para o rosto e três colheres de sopa para o corpo - a cada 2 horas, principalmente após nadar ou suar.<br><br>Use diariamente para proteger sua pele dos raios UV</p>
+   
+  </div>
+</div>
+        </section>
+
+        <section class="destaques">
+            <div class="topicos">
+            <h2>Nesta plataforma, você vai encontrar:</h2>
+            </div>
+            <div class="cards">
+                <div class="card">Informações confiáveis sobre o câncer de pele</div>
+                <div class="card">Gráficos interativos sobre o avanço da doença</div>
+                <div class="card">Dicas práticas para se prevenir</div>
+            </div>
+        </section>
+
+        <section id = "clima" class="impactos">
+            
+            <div class="sol">
+            <h2>Impactos do Sol: o que o clima tem a ver com isso?</h2>
+            </div>
+            <div>
+            <p>Estudos recentes apontam que as mudanças climáticas estão diretamente relacionadas ao aumento da radiação solar sobre a Terra, elevando os riscos à saúde humana — em especial, à saúde da pele. Pesquisas publicadas na Nature Scientific Reports (2024) revelam que, dependendo do cenário climático, a temperatura média no Brasil pode subir entre 2.7°C e 4.4°C até o fim do século, com maior impacto nas regiões Centro-Oeste e Sudeste.</p>
+            <p>O Instituto Nacional de Meteorologia (INMET) confirmou que o verão de 2024/2025 foi o sexto mais quente desde 1961, com média de 25,02°C — 0,79°C acima da média histórica (INMET, 2025). Esse aumento constante nas temperaturas resulta em ondas de calor mais frequentes e prolongadas, condição que agrava a exposição da população aos raios UV.</p>
+            <p>Segundo o Instituto Nacional do Câncer (INCA, 2022), a exposição solar excessiva entre 10h e 16h está entre os principais fatores de risco para o desenvolvimento do câncer de pele. Mesmo em dias nublados ou no inverno, os raios UV continuam presentes e perigosos.</p>
+            <p>Além disso, dados apontam que o número de dias consecutivos sob onda de calor no Brasil passou de 7 para 52 nas últimas décadas (Correio Braziliense, 2024), intensificando o alerta sobre os efeitos diretos do aquecimento global na saúde pública.</p>
+            </div>
+            <div class="imagem-rio">
+            <img src="{{ url_for('static', filename='imagens/rio.png') }}" alt="Imagem do Rio de Janeiro">
+            </div>
+    
+        </section>
+
+        <section id="cancer" class="diferenca">
+    <div class="container">
+        <!-- Coluna da esquerda -->
+        <div class="coluna">
+            <h2>Melanoma x Não Melanoma: Você sabe qual a diferença?</h2>
+
+            <h3>Câncer de Pele Melanoma</h3>
+            <p>
+                De acordo com o Instituto nacional de câncer (INCA, 2023) o câncer de pele denominado melanoma tem origem nos melanócitos, e pode aparecer em qualquer região do corpo. Em pessoas de pele negra, possui o costume de aparecer em regiões mais claras, como a palma da mão, por exemplo.
+                Se trata do tipo mais grave, pois costuma evoluir para metástase, que é quando a doença se prolifera em outras regiões do corpo, entretanto, se descoberto cedo, há uma taxa considerável de cura, podendo chegar a 90% caso seja diagnosticado precocemente.
+            </p>
+            <p>
+                Seu diagnóstico é feito através da regra “ABCDE”:<br>
+                • Assimétrica: Quando a mancha ou pinta tem diferença de formato em sua totalidade;<br>
+                • Bordas irregulares: se elas são dentadas, chanfradas, com sulcos;<br>
+                • Cor: Referente à quando a mancha apresenta diferente tonalidade, não seguindo um mesmo padrão;<br>
+                • Diâmetro: Quando possui um diâmetro superior a 0,5 mm. Não sendo uma regra, pois há melanomas com dimensões inferiores;
+            </p>
+        </div>
+
+        <!-- Linha divisória (opcional) -->
+        <div class="divisoria"></div>
+
+        <!-- Coluna da direita -->
+        <div class="coluna">
+            <h3>Câncer de Pele Não Melanoma</h3>
+            <p>O câncer de pele sem melanoma é o mais comum aqui no Brasil e o que tem mais chance de cura, se for detectado na sua fase inicial. O não melanoma apresenta tumores de diferentes tipos, como o Carcinoma Basocelular e o Carcinoma Epidermoide</p>
+            <p>o Carninoma Basocelular (CBC), é a forma de não melanoma mais comum representando cerca de 80% dos casos e costuma ser menos graves e com maiores chances de cura.  </p>
+            <p>De acordo com o INCA, entre os anos de 2023 e 2025, são esperados um total de aproximadamente 220 mil novos casos, sendo 102 mil casos em pessoas do sexo masculino e 119 mil casos em pessoas do sexo feminino.   </p>
+            <p>Já em relação ao carcinoma espinocelular, pode ter sua origem a partir de feridas crônicas ou alterações ou danos visíveis na pele, e quando comparado ao carcinoma basocelular, ele apresenta maior potencial de metástase (INCA, 2023). </p>
+            <ul>
+                <li>	Pintas irregulares;</li>
+                <li>	Feridas que não cicatrizam;</li>
+                <li>	Manchas avermelhadas ou escurecidas;</li>
+                <li>	Caroços ou nódulos;</li>
+                <li>	Casquinhas ou descamações persistentes.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+    
+        <section id="prevencao" class="cuidados">
+            <div class="diarios">
+            <h2>Cuidados Diários Contra o Câncer de Pele</h2>
+            </div>
+            <ul>
+                <div class="prevencoes1">
+                <li><strong>Evite o sol entre 10h e 16h.</strong> É nesse período que os raios UV atingem níveis mais perigosos.</li>
+                </div>
+                <div class="prevencoes2">
+                <li><strong>Use protetor solar com FPS 30 ou superior.</strong> Aplique 30 minutos antes e reaplique.</li>
+                </div>
+                <div class="prevencoes3">
+                <li><strong>Vista-se de forma consciente.</strong> Roupas longas e escuras ajudam a proteger.</li>
+                </div>
+                <div class="prevencoes4">
+                <li><strong>Busque sombra sempre que possível.</strong> Mesmo em dias nublados, os raios UV causam danos.</li>
+                </div>
+                 <div class="prevencoes5">
+                <li><strong>Fique atenta aos sinais na pele.</strong> Pintas e manchas devem ser avaliadas por dermatologistas.</li>
+                </div>
+                 <div class="prevencoes6">
+                <li><strong>Não negligencie o inverno.</strong> 80% dos raios UV atravessam as nuvens.</li>
+                </div>
+                </div>
+            </ul>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- Botão que abre o modal -->
+  
+
+<!-- Estrutura do Modal -->
+<div id="myModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span id="closeModalBtn" class="close">&times;</span>
+    <h2>Dezembro Laranja</h2>
+    <p>Você já ouviu falar sobre o dezembro laranja?</p>
+    <p>O dezembro laranja se trata de uma campanha realizada de forma anual sobre a conscientização e prevenção do câncer de pele. Essa campanha, promovida pela Sociedade Brasileira de Dermatologia (SBD), busca incentivar o disgnóstico precoce da doença, que vem se tornando cada vez mais comum no Brasil.</p>
+    <p> A detecção precoce auxilia para uma cura mais rápida, além de um tratamento menos invasivo</p>
+    <p> Durante a campanha, a Sociedade Braasileira de Dermatologia (SBD) e outras instituições realizam o "Dia do Atendimento" com atendimentos gratuitos e também oferecem orientação referente a doença.</p>
+
+</div>
+</div>
+
+
+<!--<div id="alerta-uv"></div>-->
+<!--<script src="{{ url_for('static', filename='react/static/js/main.d89a9986.js') }}"></script>-->
+
+<!--codigo para buscar geolocalização da pessoa e mostrar a radiação UV em tempo real  -->
+
+<div id="uv-popup" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    width: 250px;
+    text-align: center;
+    background-color: #f0f0f0;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    font-family: Arial, sans-serif;
+    z-index: 1000;
+">
+    <div style="text-align: right;">
+        <button onclick="closePopup()" style="
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        ">✖</button>
+    </div>
+    <h3 style="margin: 0 0 10px 0;">Previsão Máxima do Índice UV Hoje</h3>
+    <div id="uv-icon" style="font-size: 50px; margin-bottom: 10px;">☀️</div>
+    <div id="uv-value" style="font-size: 2em; font-weight: bold;">Carregando...</div>
+    <div id="uv-level" style="margin-top: 10px;">...</div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .pulsing {
+        animation: pulse 1s infinite;
+    }
+</style>
+
+<script>
+    function getUvColor(value) {
+        if (value <= 2) return '#4CAF50';        // Baixo (verde)
+        if (value <= 5) return '#FFEB3B';        // Moderado (amarelo)
+        if (value <= 7) return '#FF9800';        // Alto (laranja)
+        if (value <= 10) return '#F44336';       // Muito Alto (vermelho)
+        return '#9C27B0';                        // Extremo (roxo)
+    }
+
+    function getUvLabel(value) {
+        if (value <= 2) return 'Baixo';
+        if (value <= 5) return 'Moderado';
+        if (value <= 7) return 'Alto';
+        if (value <= 10) return 'Muito Alto';
+        return 'Extremo';
+    }
+
+    function getUvIcon(value) {
+        if (value <= 2) return '☀️';       // Sol calmo
+        if (value <= 5) return '⛅';        // Sol entre nuvens
+        if (value <= 7) return '🌤️';       // Sol forte
+        if (value <= 10) return '🌞';       // Sol muito intenso
+        return '⚡';                        // Raio UV extremo
+    }
+
+    function closePopup() {
+        document.getElementById('uv-popup').style.display = 'none';
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+        document.getElementById('uv-value').innerText = "Sem suporte.";
+    }
+
+    function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const apiKey = '3f59fb330add1cfad36119abb1e4d8cb';
+
+        fetch(`https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${apiKey}`)
+            .then(response => response.json())
+            .then(data => {
+                const uvValue = data.value;
+                const color = getUvColor(uvValue);
+                const label = getUvLabel(uvValue);
+                const icon = getUvIcon(uvValue);
+
+                const popup = document.getElementById('uv-popup');
+                const valueDiv = document.getElementById('uv-value');
+                const levelDiv = document.getElementById('uv-level');
+                const iconDiv = document.getElementById('uv-icon');
+
+                valueDiv.innerText = uvValue;
+                levelDiv.innerText = label;
+                iconDiv.innerText = icon;
+
+                popup.style.backgroundColor = color;
+
+                if (uvValue > 7) {
+                    popup.classList.add('pulsing');
+                } else {
+                    popup.classList.remove('pulsing');
+                }
+            })
+            .catch(() => {
+                document.getElementById('uv-value').innerText = "Erro.";
+            });
+    }
+
+    function error() {
+        document.getElementById('uv-value').innerText = "Sem localização.";
+    }
+</script>
+
+
+</body>
+</html>
