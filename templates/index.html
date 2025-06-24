@@ -10,6 +10,14 @@
     <header>
         <nav>
             <div class="logo"></div>
+            <p class="form-text">
+        🌞 <strong>Cadastre seu e-mail</strong> para receber notificações diárias sobre a <span style="color:#fcff33;">radiação UV</span> da sua região.
+    </p>
+            <form>
+            <input type="email" id="email" placeholder="Seu e-mail" required />
+            <button type="button" onclick="enviarLocalizacao()">Cadastrar</button>
+            <div id="mensagem"></div>
+            </form>
 
             <ul>
                 <li><a href="#">Gráficos</a></li> 
@@ -184,7 +192,7 @@
             cursor: pointer;
         ">✖</button>
     </div>
-    <h3 style="margin: 0 0 10px 0;">Previsão Máxima do Índice UV Hoje</h3>
+    <h3 style="margin: 0 0 10px 0;">Previsão Máxima do Índice UV Hoje na Sua Região:</h3>
     <div id="uv-icon" style="font-size: 50px; margin-bottom: 10px;">☀️</div>
     <div id="uv-value" style="font-size: 2em; font-weight: bold;">Carregando...</div>
     <div id="uv-level" style="margin-top: 10px;">...</div>
@@ -276,6 +284,58 @@
         document.getElementById('uv-value').innerText = "Sem localização.";
     }
 </script>
+
+<!-- script do front end para pegar a localização da pessoa -->
+
+<script>
+    function enviarLocalizacao() {
+      const email = document.getElementById('email').value.trim();
+      const cep = document.getElementById('cep').value.trim();
+
+      if (!email || !cep) {
+        mostrarMensagem('Por favor, preencha todos os campos.', true);
+        return;
+      }
+
+      fetch('/cadastro_email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, cep: cep })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          mostrarMensagem(data.message, false);
+        } else {
+          mostrarMensagem(data.message, true);
+        }
+      })
+      .catch(() => mostrarMensagem('Erro ao enviar dados. Tente novamente.', true));
+    }
+
+    function mostrarMensagem(texto, isError) {
+      const div = document.getElementById('mensagem');
+      div.textContent = texto;
+      div.className = isError ? 'error' : 'msg';
+    }
+
+</script>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash-message">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+<script src="/static/script.js"></script>
+
+
+
 
 
 </body>

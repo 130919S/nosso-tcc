@@ -32,12 +32,12 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     const targetID = this.getAttribute('href');
     const target = document.querySelector(targetID);
     if (target) {
-      smoothScrollTo(target, 1500); // Duração em ms, ajuste para mais lento ou rápido
+      smoothScrollTo(target, 1500); // Duração em ms, ajuste para mais lento ou rápido ao clicar no botão e descer a tela
     }
   });
 });
 
-// modal //
+// modal que fala sobre o dezembro laranja //
 document.addEventListener('DOMContentLoaded', function() {
   const modal = document.getElementById('myModal');
   const openModalBtn = document.getElementById('openModalBtn');
@@ -59,5 +59,43 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+// e-mail do cliente //
 
+function enviarLocalizacao() {
+  const email = document.getElementById('email').value.trim();
 
+  if (!email) {
+    mostrarMensagem('Por favor, preencha o e-mail.', true);
+    return;
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      const data = {
+        email: email,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+
+      fetch('/cadastro_email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        mostrarMensagem(data.message, !data.success);
+        document.getElementById('email').value = '';
+      })
+      .catch(() => mostrarMensagem('Erro ao enviar os dados.', true));
+    });
+  } else {
+    mostrarMensagem('Geolocalização não suportada no seu navegador.', true);
+  }
+}
+
+function mostrarMensagem(texto, isError) {
+  const div = document.getElementById('mensagem');
+  div.textContent = texto;
+  div.className = isError ? 'error' : 'msg';
+}
