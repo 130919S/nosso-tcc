@@ -88,6 +88,8 @@ function enviarLocalizacao() {
         document.getElementById('email').value = '';
       })
       .catch(() => mostrarMensagem('Erro ao enviar os dados.', true));
+    }, function(error) {
+      mostrarMensagem('Não foi possível obter a localização: ' + error.message, true);
     });
   } else {
     mostrarMensagem('Geolocalização não suportada no seu navegador.', true);
@@ -99,3 +101,5 @@ function mostrarMensagem(texto, isError) {
   div.textContent = texto;
   div.className = isError ? 'error' : 'msg';
 }
+
+
