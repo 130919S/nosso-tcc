@@ -7,47 +7,45 @@
 
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo"></div>
-            <p class="form-text">
-        🌞 <strong>Cadastre seu e-mail</strong> para receber notificações diárias sobre a <span style="color:#fcff33;">radiação UV</span> da sua região.
-    </p>
-            <form>
-            <input type="email" id="email" placeholder="Seu e-mail" required />
-            <button type="button" onclick="enviarLocalizacao()">Cadastrar</button>
-            <div id="mensagem"></div>
-            </form>
+<header>
+  <nav class="topo-flex">
+    <div class="form-navegacao">
+      <input type="email" id="email" placeholder="Receba alertas de radiação UV" required />
+      <button type="button" class="botao-menu" onclick="enviarLocalizacao()">Cadastrar e-mail</button>
+    </div>
 
-            <ul>
-                <li><a href="#">Gráficos</a></li> 
-                <li><a href="#clima">Clima x Câncer de Pele</a></li>
-                <li><a href="#cancer">Melanoma x Não Melanoma</a></li>
-                <li><a href="#prevencao">Prevenção</a></li>
-            </ul>
-        </nav>
-    </header>
+    <ul class="menu-links">
+      <li><a href="#">Gráficos</a></li>
+      <li><a href="#clima">Clima x Câncer de Pele</a></li>
+      <li><a href="#cancer">Melanoma x Não Melanoma</a></li>
+      <li><a href="#prevencao">Prevenção</a></li>
+    </ul>
+  </nav>
+</header>
 
      <div id="alerta-uv"></div>
 
     <main>
-        <section class="intro">
-            <div class="texto">
-                <div class="mini_introducao">
-                <h1>A exposição ao sol é inevitável.<br><span>Os cuidados, não.</span></h1> 
-            </div>
-                <p>O câncer de pele é o tipo <strong>mais comum</strong> no Brasil — e também um dos <strong>mais preveníveis</strong>.</p>
-                <p>Você sabia que a maioria dos casos poderia ser evitada com proteção adequada e diagnóstico precoce?</p>
-                <a href="#" id="openModalBtn" class="botao">A sua saúde começa com a informação.</a>
-            </div>
-            <div class="imagem-overlay">
-  <img src="{{ url_for('static', filename='imagens/praia.png') }}" alt="Descrição da imagem">
-  <div class="texto-overlay">
-    <p>Para que o protetor solar se torne eficaz, é preciso passar a quantidade adequeada - em torno de uma colher de chá para o rosto e três colheres de sopa para o corpo - a cada 2 horas, principalmente após nadar ou suar.<br><br>Use diariamente para proteger sua pele dos raios UV</p>
-   
+<section class="intro">
+  <div class="texto">
+    <div class="mini_introducao">
+      <h1>A exposição ao sol é inevitável.<br><span>Os cuidados, não.</span></h1>
+    </div>
+    <p>O câncer de pele é o tipo <strong>mais comum</strong> no Brasil — e também um dos <strong>mais preveníveis</strong>.Com o aumento das temperaturas e a intensificação dos raios UV, o cuidado com a saúde da pele nunca foi tão necessário.</p>
+    <p>Você sabia que a maioria dos casos poderia ser evitada com proteção adequada e diagnóstico precoce?</p>
+    <a href="#" id="openModalBtn" class="botao">A sua saúde começa com a informação.</a>
   </div>
-</div>
-        </section>
+
+  <div class="imagem-overlay efeito-fixo">
+    <img src="{{ url_for('static', filename='imagens/praia.png') }}" alt="Pessoa aplicando protetor solar em criança">
+    <div class="texto-overlay">
+      <p>
+        Para que o protetor solar se torne eficaz, é preciso passar a quantidade adequada — em torno de uma colher de chá para o rosto e três colheres de sopa para o corpo — a cada 2 horas, principalmente após nadar ou suar.<br><br>
+        <strong>Use diariamente para proteger sua pele dos raios UV</strong>
+      </p>
+    </div>
+  </div>
+</section>
 
         <section class="destaques">
             <div class="topicos">
