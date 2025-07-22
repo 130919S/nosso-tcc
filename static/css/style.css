@@ -155,8 +155,8 @@ input[type="email"] {
 }
 
 .botao {
-  display: inline-block;
-  padding: 0.6em 1.2em;
+  font-size: 0.9rem;       /* ← diminui o texto */
+  padding: 0.4em 0.8em;     /* ← reduz o espaço interno */
   border: 2px solid #f97316;
   color: #f97316;
   text-decoration: none;
@@ -319,17 +319,36 @@ html {
     line-height: 1.6;
     font-family: Arial, sans-serif;
     border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-sizing: border-box;              /* ← importante para o padding não ultrapassar */
+    overflow: auto;                      /* ← permite rolagem se o texto for maior */
+    word-wrap: break-word;              /* ← quebra o texto se for longo */
 }
+
+.imagem-overlay:hover .texto-overlay {
+  opacity: 1;
+}
+
+
 
 /* DESTAQUES */
 .destaques {
-    background: #f1f1f1;
-    padding: 2em;
+    background-color: #f9f9f9;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 2em 1.5em; /* ↓ reduzido */
     text-align: center;
+    max-width: 1200px;
+    margin: 40px auto;  /* ↓ reduzido */
 }
+
 
 .destaques .topicos {
     color: #f97316;
+    font-size: 1.5rem;
+    margin-bottom: 1em;
+    font-weight: bold;
 }
 
 .cards {
@@ -342,11 +361,14 @@ html {
 
 .card {
     background: white;
-    padding: 1em;
-    border-radius: 8px;
-    width: 200px;
+    padding: 1.2em;
+    border-radius: 10px;
+    width: 220px;
     box-shadow: 0 0 5px #f97316;
     transition: all 0.3s ease;
+    font-size: 1rem;
+    line-height: 1.6;
+    font-family: Arial, sans-serif;
 }
 
 .card:hover {
@@ -357,61 +379,89 @@ html {
 /* IMPACTOS DO SOL */
 .impactos {
     display: flex;
-    justify-content: space-between;
-    gap: 40px;
-    align-items: flex-start;
-    padding: 2em;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    padding: 60px 20px;
+    background-color: #f9f9f9; /* ← novo */
+    border-radius: 16px;       /* ← novo */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* ← novo */
     color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
 }
-
 .impactos .sol {
     width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.impactos .sol h2 {
     color: #f97316;
+    font-size: 2rem;
+    margin-bottom: 0;
 }
 
 .impactos > div:not(.imagem-rio):not(.sol) {
-    flex: 1.5;
-    min-width: 10%;
+    flex: 1 1 500px;
+    max-width: 600px;
+    text-align: justify;
+    line-height: 1.6;
+    font-size: 1rem;
 }
 
 .imagem-rio {
-    flex: 1;
-    min-width: 400px;
-    max-width: 1000px;
+    flex: 1 1 400px;
+    max-width: 500px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-left: 50px;
 }
 
 .imagem-rio img {
-    width: 120%;
+    width: 100%;
     height: auto;
-    border-radius: 12px;
+    border-radius: 16px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
-/* CUIDADOS */
 .cuidados {
-    background-color: #f1f1f1;
-    padding: 2em;
+  background-color: #f9f9f9;
+  padding: 3em 2em;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 1200px;
+  margin: 60px auto;
+  text-align: center;
 }
 
-.cuidados .diarios {
-    color: #f97316;
+.cuidados .diarios h2 {
+  color: #f97316;
+  font-size: 1.8rem;
+  margin-bottom: 1em;
 }
 
-.prevencoes1, .prevencoes2, .prevencoes3, .prevencoes4, .prevencoes5, .prevencoes6 {
-    background-color: #fff;
-    border-radius: 30px;
-    padding: 16px 24px;
-    margin: 20px 0;
-    border-left: 8px solid #f17c2c;
-    border-top: 8px solid #f17c2c;
-    color: #333;
-    line-height: 1.5;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+.lista-cuidados {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.prevencao {
+  background-color: #fff;
+  border-radius: 30px;
+  padding: 16px 24px;
+  margin: 20px 0;
+  border-left: 8px solid #f17c2c;
+  border-top: 8px solid #f17c2c;
+  color: #333;
+  line-height: 1.6;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: left;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* DIFERENÇA ENTRE CÂNCERES */
@@ -422,9 +472,11 @@ html {
     align-items: flex-start;
     padding: 30px;
     flex-wrap: wrap;
-    width: 50%;
+    margin: 0 auto;
     background-color: rgba(255,255,255, 0.9);
     color: #333;
+    width: 100%;
+    max-width: 1200px;
 }
 
 .container {
@@ -452,47 +504,75 @@ html {
 
 /* MODAL */
 .modal {
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5);
-    display: none;
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 500px;
-    position: relative;
+  background-color: #fffbea;
+  border-radius: 16px;
+  padding: 2em;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  position: relative;
+  animation: fadeInModal 0.4s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content h2 {
+  color: #f97316;
+  font-size: 2rem;
+  margin-top: 0;
+  text-align: center;
+}
+
+.modal-content p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1em;
+}
+
+.modal-content .highlight {
+  background-color: #fff0d9;
+  padding: 0.6em;
+  border-left: 4px solid #f97316;
+  border-radius: 8px;
+  margin: 1em 0;
 }
 
 .close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s ease;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  color: #f97316;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
 .close:hover {
-    color: #000;
-}
-
-.flash-message {
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
-    padding: 10px;
-    margin: 15px 0;
-    border-radius: 5px;
-    font-weight: bold;
+  transform: scale(1.2);
 }

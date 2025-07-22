@@ -33,7 +33,7 @@
     </div>
     <p>O câncer de pele é o tipo <strong>mais comum</strong> no Brasil — e também um dos <strong>mais preveníveis</strong>.Com o aumento das temperaturas e a intensificação dos raios UV, o cuidado com a saúde da pele nunca foi tão necessário.</p>
     <p>Você sabia que a maioria dos casos poderia ser evitada com proteção adequada e diagnóstico precoce?</p>
-    <a href="#" id="openModalBtn" class="botao">A sua saúde começa com a informação.</a>
+    <a href="#" id="openModalBtn" class="botao">A sua saúde começa com a informação. Clique aqui e saiba mais!</a>
   </div>
 
   <div class="imagem-overlay efeito-fixo">
@@ -119,31 +119,30 @@
 
     
         <section id="prevencao" class="cuidados">
-            <div class="diarios">
-            <h2>Cuidados Diários Contra o Câncer de Pele</h2>
-            </div>
-            <ul>
-                <div class="prevencoes1">
-                <li><strong>Evite o sol entre 10h e 16h.</strong> É nesse período que os raios UV atingem níveis mais perigosos.</li>
-                </div>
-                <div class="prevencoes2">
-                <li><strong>Use protetor solar com FPS 30 ou superior.</strong> Aplique 30 minutos antes e reaplique.</li>
-                </div>
-                <div class="prevencoes3">
-                <li><strong>Vista-se de forma consciente.</strong> Roupas longas e escuras ajudam a proteger.</li>
-                </div>
-                <div class="prevencoes4">
-                <li><strong>Busque sombra sempre que possível.</strong> Mesmo em dias nublados, os raios UV causam danos.</li>
-                </div>
-                 <div class="prevencoes5">
-                <li><strong>Fique atenta aos sinais na pele.</strong> Pintas e manchas devem ser avaliadas por dermatologistas.</li>
-                </div>
-                 <div class="prevencoes6">
-                <li><strong>Não negligencie o inverno.</strong> 80% dos raios UV atravessam as nuvens.</li>
-                </div>
-                </div>
-            </ul>
-        </section>
+  <div class="diarios">
+    <h2>Cuidados Diários Contra o Câncer de Pele</h2>
+  </div>
+  <ul class="lista-cuidados">
+    <li class="prevencao">
+      <strong>Evite o sol entre 10h e 16h.</strong> É nesse período que os raios UV atingem níveis mais perigosos.
+    </li>
+    <li class="prevencao">
+      <strong>Use protetor solar com FPS 30 ou superior.</strong> Aplique 30 minutos antes e reaplique.
+    </li>
+    <li class="prevencao">
+      <strong>Vista-se de forma consciente.</strong> Roupas longas e escuras ajudam a proteger.
+    </li>
+    <li class="prevencao">
+      <strong>Busque sombra sempre que possível.</strong> Mesmo em dias nublados, os raios UV causam danos.
+    </li>
+    <li class="prevencao">
+      <strong>Fique atenta aos sinais na pele.</strong> Pintas e manchas devem ser avaliadas por dermatologistas.
+    </li>
+    <li class="prevencao">
+      <strong>Não negligencie o inverno.</strong> 80% dos raios UV atravessam as nuvens.
+    </li>
+  </ul>
+</section>
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
@@ -151,16 +150,31 @@
   
 
 <!-- Estrutura do Modal -->
-<div id="myModal" class="modal" style="display:none;">
+<div id="myModal" class="modal">
   <div class="modal-content">
     <span id="closeModalBtn" class="close">&times;</span>
-    <h2>Dezembro Laranja</h2>
-    <p>Você já ouviu falar sobre o dezembro laranja?</p>
-    <p>O dezembro laranja se trata de uma campanha realizada de forma anual sobre a conscientização e prevenção do câncer de pele. Essa campanha, promovida pela Sociedade Brasileira de Dermatologia (SBD), busca incentivar o disgnóstico precoce da doença, que vem se tornando cada vez mais comum no Brasil.</p>
-    <p> A detecção precoce auxilia para uma cura mais rápida, além de um tratamento menos invasivo</p>
-    <p> Durante a campanha, a Sociedade Braasileira de Dermatologia (SBD) e outras instituições realizam o "Dia do Atendimento" com atendimentos gratuitos e também oferecem orientação referente a doença.</p>
+    <h2>Você já ouviu falar sobre o Dezembro Laranja?</h2>
 
-</div>
+    <div class="highlight">
+      <p>O Dezembro Laranja é uma campanha nacional de conscientização sobre o <strong>câncer de pele</strong>, promovida pela <strong>Sociedade Brasileira de Dermatologia (SBD)</strong>.</p>
+    </div>
+
+    <p>Essa iniciativa busca alertar a população sobre a importância do <strong>diagnóstico precoce</strong> e da <strong>prevenção</strong> da doença, incentivando hábitos seguros ao se expor ao sol.</p>
+
+    <p>Durante o mês, instituições promovem ações como:</p>
+    <ul>
+      <li>Distribuição de protetor solar;</li>
+      <li>Campanhas educativas nas redes sociais;</li>
+      <li>Atendimentos dermatológicos gratuitos à população;</li>
+      <li>Divulgação de dados sobre a incidência da doença.</li>
+    </ul>
+
+    <div class="highlight">
+      <p><strong>Atenção:</strong> O câncer de pele é o mais comum no Brasil, mas também o mais evitável.</p>
+    </div>
+
+    <p>Use o Dezembro Laranja como um lembrete para cuidar da sua pele todos os dias!</p>
+  </div>
 </div>
 
 
