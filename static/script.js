@@ -103,3 +103,151 @@ function mostrarMensagem(texto, isError) {
 }
 
 
+// ajustes dos cards embaixo //
+
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll('.scroll-reveal');
+
+  console.log("🔎 Total de cards encontrados:", cards.length);
+
+  function revealOnScroll() {
+    const windowHeight = window.innerHeight;
+    cards.forEach(card => {
+      const cardTop = card.getBoundingClientRect().top;
+
+      if (cardTop < windowHeight - 50 && !card.classList.contains("visible")) {
+        card.classList.add('visible');
+        console.log("🟠 Card revelado:", card.querySelector('h3')?.textContent);
+      }
+    });
+  }
+
+  window.addEventListener('scroll', revealOnScroll);
+});
+
+// perguntas e respostas - teste de conhecimento //
+
+// ========== Animação dos cards scroll-reveal ==========
+const cards = document.querySelectorAll('.scroll-reveal');
+
+function revealOnScroll() {
+  const windowHeight = window.innerHeight;
+  cards.forEach(card => {
+    const cardTop = card.getBoundingClientRect().top;
+    if (cardTop < windowHeight - 50) {
+      card.classList.add('visible');
+    }
+  });
+}
+
+window.addEventListener('scroll', revealOnScroll);
+window.addEventListener('load', revealOnScroll);
+
+// ========== Lógica do Quiz ==========
+document.addEventListener("DOMContentLoaded", () => {
+  const perguntas = [
+    {
+      pergunta: "1. Qual o horário mais perigoso para se expor ao sol?",
+      opcoes: [
+        { texto: "Antes das 9h", valor: "a" },
+        { texto: "Entre 10h e 16h", valor: "b" },
+        { texto: "Após as 17h", valor: "c" }
+      ],
+      correta: "b"
+    },
+    {
+      pergunta: "2. Qual o fator de proteção solar (FPS) mínimo recomendado?",
+      opcoes: [
+        { texto: "FPS 15", valor: "a" },
+        { texto: "FPS 20", valor: "b" },
+        { texto: "FPS 30", valor: "c" }
+      ],
+      correta: "c"
+    },
+    {
+      pergunta: "3. Quais sinais na pele devem ser observados com atenção?",
+      opcoes: [
+        { texto: "Mudança de cor, forma ou sangramento", valor: "a" },
+        { texto: "Pintas pequenas e claras", valor: "b" },
+        { texto: "Pele ressecada", valor: "c" }
+      ],
+      correta: "a"
+    },
+    {
+      pergunta: "4. Qual é o tipo de câncer mais comum no Brasil?",
+      opcoes: [
+        { texto: "Câncer de mama", valor: "a" },
+        { texto: "Câncer de pele", valor: "b" },
+        { texto: "Câncer de próstata", valor: "c" }
+      ],
+      correta: "b"
+    },
+    {
+      pergunta: "5. Usar chapéu e óculos escuros ajuda na prevenção?",
+      opcoes: [
+        { texto: "Sim", valor: "a" },
+        { texto: "Não", valor: "b" }
+      ],
+      correta: "a"
+    }
+  ];
+
+  let perguntaAtual = 0;
+  let respostas = [];
+
+  const container = document.getElementById("pergunta-container");
+  const botao = document.getElementById("botao-proximo");
+  const resultadoDiv = document.getElementById("resultado-quiz");
+  const barraProgresso = document.getElementById("barra-progresso");
+
+  function exibirPergunta() {
+    const p = perguntas[perguntaAtual];
+    container.innerHTML = `
+      <p>${p.pergunta}</p>
+      ${p.opcoes.map(o => `
+        <label>
+          <input type="radio" name="resposta" value="${o.valor}"> ${o.texto}
+        </label><br>
+      `).join('')}
+    `;
+    atualizarProgresso(); // Atualiza a barra aqui
+  }
+
+  function atualizarProgresso() {
+    const progresso = ((perguntaAtual) / perguntas.length) * 100;
+    barraProgresso.style.width = `${progresso}%`;
+  }
+
+  botao.addEventListener("click", () => {
+    const selecionada = document.querySelector('input[name="resposta"]:checked');
+    if (!selecionada) {
+      alert("Por favor, selecione uma resposta antes de continuar.");
+      return;
+    }
+
+    respostas.push(selecionada.value);
+    perguntaAtual++;
+
+    if (perguntaAtual < perguntas.length) {
+      exibirPergunta();
+    } else {
+      calcularResultado();
+      botao.style.display = "none";
+      barraProgresso.style.width = "100%"; // Completa ao final
+    }
+  });
+
+  function calcularResultado() {
+    let acertos = 0;
+    respostas.forEach((r, i) => {
+      if (r === perguntas[i].correta) acertos++;
+    });
+
+    resultadoDiv.innerHTML = `
+      <h3>Resultado:</h3>
+      <p>Você acertou <strong>${acertos} de ${perguntas.length}</strong> perguntas.</p>
+    `;
+  }
+
+  exibirPergunta(); // Inicia com a primeira pergunta
+});

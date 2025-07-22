@@ -47,16 +47,23 @@
   </div>
 </section>
 
-        <section class="destaques">
-            <div class="topicos">
-            <h2>Nesta plataforma, você vai encontrar:</h2>
-            </div>
-            <div class="cards">
-                <div class="card">Informações confiáveis sobre o câncer de pele</div>
-                <div class="card">Gráficos interativos sobre o avanço da doença</div>
-                <div class="card">Dicas práticas para se prevenir</div>
-            </div>
-        </section>
+        <section class="cards-container">
+  <h2>Nesta plataforma, você vai encontrar:</h2>
+  <div class="cards">
+    <div class="card scroll-reveal">
+      <p>📚 Informações confiáveis sobre o câncer de pele</p>
+    </div>
+    <div class="card scroll-reveal">
+      <p>📈 Gráficos interativos sobre o avanço da doença</p>
+    </div>
+    <div class="card scroll-reveal">
+      <p>🛡️ Dicas práticas para se prevenir</p>
+    </div>
+    <div class="card scroll-reveal">
+      <p> E muito mais...</p>
+    </div>
+  </div>
+</section>
 
         <section id = "clima" class="impactos">
             
@@ -146,36 +153,103 @@
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
+    <!-- cards-->
+
+    <section id="info-cards" class="cards-container">
+  <h2>Você Sabia?</h2>
+  <div class="cards">
+    <div class="card scroll-reveal">
+      <h3>🧠 Você sabia?</h3>
+      <p>O câncer de pele representa cerca de <strong>33% de todos os diagnósticos de câncer no Brasil</strong>, segundo o INCA.</p>
+    </div>
+    <div class="card scroll-reveal">
+      <h3>📊 Estimativa 2023</h3>
+      <p>Foram esperados mais de <strong>220 mil novos casos</strong> de câncer de pele não melanoma no Brasil em 2023.</p>
+    </div>
+    <div class="card scroll-reveal">
+      <h3>🌤️ Radiação UV</h3>
+      <p>A exposição à radiação ultravioleta é o <strong>principal fator de risco</strong> para desenvolver câncer de pele.</p>
+    </div>
+    <div class="card scroll-reveal">
+      <h3>👨‍⚕️ Autoexame da pele</h3>
+      <p>Manchas que <strong>mudam de cor, forma ou tamanho</strong>, coçam ou sangram devem ser avaliadas por um dermatologista.</p>
+    </div>
+  </div>
+</section>
+
     <!-- Botão que abre o modal -->
   
 
 <!-- Estrutura do Modal -->
 <div id="myModal" class="modal">
   <div class="modal-content">
+
     <span id="closeModalBtn" class="close">&times;</span>
-    <h2>Você já ouviu falar sobre o Dezembro Laranja?</h2>
 
-    <div class="highlight">
-      <p>O Dezembro Laranja é uma campanha nacional de conscientização sobre o <strong>câncer de pele</strong>, promovida pela <strong>Sociedade Brasileira de Dermatologia (SBD)</strong>.</p>
+    <div class="modal-flex">
+      <!-- Coluna da esquerda (texto principal) -->
+      <div class="coluna-esquerda">
+        <h2>Você já ouviu falar sobre o Dezembro Laranja?</h2>
+
+        <div class="highlight">
+          <p>O Dezembro Laranja é uma campanha nacional de conscientização sobre o <strong>câncer de pele</strong>, promovida pela <strong>Sociedade Brasileira de Dermatologia (SBD)</strong>.</p>
+        </div>
+
+        <p>Essa iniciativa busca alertar a população sobre a importância do <strong>diagnóstico precoce</strong> e da <strong>prevenção</strong> da doença, incentivando hábitos seguros ao se expor ao sol.</p>
+
+        <p>Durante o mês, instituições promovem ações como:</p>
+        <ul>
+          <li>Distribuição de protetor solar;</li>
+          <li>Campanhas educativas nas redes sociais;</li>
+          <li>Atendimentos dermatológicos gratuitos à população;</li>
+          <li>Divulgação de dados sobre a incidência da doença.</li>
+        </ul>
+
+        <div class="highlight">
+          <p><strong>Atenção:</strong> O câncer de pele é o mais comum no Brasil, mas também o mais evitável.</p>
+        </div>
+
+        <p>Use o Dezembro Laranja como um lembrete para cuidar da sua pele todos os dias!</p>
+      </div>
+
+      <!-- Coluna da direita (marcos históricos) -->
+      <div class="coluna-direita">
+        <h3>📅 Principais Marcos da Campanha</h3>
+        <ul class="timeline">
+          <li><strong>2014 – Início da Campanha:</strong> Lançamento oficial pela SBD para alertar sobre o câncer de pele.</li>
+          <li><strong>2015 – “Se exponha, mas não se queime”:</strong> Foco em proteção solar e mutirões com dermatologistas.</li>
+          <li><strong>2016 – “Câncer de pele é coisa séria”:</strong> Alerta reforçado nas redes e mídia.</li>
+          <li><strong>2018 – Recorde de atendimentos:</strong> Mais de 30 mil pessoas atendidas gratuitamente em um ano.</li>
+          <li><strong>2020 – “Adicione proteção ao seu verão”:</strong> Campanha digital em meio à pandemia.</li>
+          <li><strong>2022 – Diagnóstico precoce:</strong> Destaque para identificação rápida e parcerias com universidades.</li>
+        </ul>
+
+        <p style="margin-top: 20px;"><strong>Cuide da sua pele. Prevenir é sempre melhor do que tratar.</strong></p>
+      </div>
     </div>
 
-    <p>Essa iniciativa busca alertar a população sobre a importância do <strong>diagnóstico precoce</strong> e da <strong>prevenção</strong> da doença, incentivando hábitos seguros ao se expor ao sol.</p>
-
-    <p>Durante o mês, instituições promovem ações como:</p>
-    <ul>
-      <li>Distribuição de protetor solar;</li>
-      <li>Campanhas educativas nas redes sociais;</li>
-      <li>Atendimentos dermatológicos gratuitos à população;</li>
-      <li>Divulgação de dados sobre a incidência da doença.</li>
-    </ul>
-
-    <div class="highlight">
-      <p><strong>Atenção:</strong> O câncer de pele é o mais comum no Brasil, mas também o mais evitável.</p>
-    </div>
-
-    <p>Use o Dezembro Laranja como um lembrete para cuidar da sua pele todos os dias!</p>
   </div>
 </div>
+
+<!-- teste de conhecimento, quiz-->
+
+<section id="quiz" class="quiz-container">
+  <h2>Teste seus conhecimentos sobre o Câncer de Pele</h2>
+
+  <!-- Barra de progresso -->
+  <div class="quiz-progress">
+    <div class="progress-bar" id="barra-progresso"></div>
+  </div>
+
+  <!-- Onde a pergunta será exibida -->
+  <div id="pergunta-container"></div>
+
+  <!-- Botão de próxima pergunta -->
+  <button id="botao-proximo" class="botao-menu">Próxima</button>
+
+  <!-- Resultado final -->
+  <div id="resultado-quiz"></div>
+</section>
 
 
 <!--<div id="alerta-uv"></div>-->
