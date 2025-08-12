@@ -610,6 +610,7 @@ html {
   background-color: #fffbea;
   padding: 60px 20px;
   text-align: center;
+  margin-top: 50px;
 }
 
 .cards-container h2 {
@@ -637,7 +638,7 @@ html {
 }
 
 .card h3 {
-  color: #f9f9f9;
+  color: #f97316;
   margin-bottom: 10px;
 }
 
@@ -745,3 +746,48 @@ html {
   width: 0%;
   transition: width 0.4s ease;
 }
+
+.secao-cuidados-quiz {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 40px; /* espaço entre cuidados e quiz */
+  margin: 40px auto;
+  max-width: 1200px; /* largura máxima do container */
+  
+}
+
+.cuidados {
+  flex: 0 0 600px; /* largura fixa */
+
+}
+
+.lista-cuidados {
+  list-style: none;
+  padding: 0;
+  
+}
+
+.lista-cuidados li {
+  background: white;
+  border: 4px solid orange;
+  border-radius: 20px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+ 
+}
+
+.cuidados-container {
+  margin-top: -80px; /* Ajuste esse valor para subir mais ou menos */
+}
+
+
+.quiz-container {
+  flex: 0 0 350px; /* largura do quiz */
+  background: #fff8f0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+

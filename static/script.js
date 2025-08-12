@@ -1,41 +1,77 @@
 // scripts.js
 
-function smoothScrollTo(targetElement, duration = 1000) {
-  const start = window.pageYOffset;
-  const targetPosition = targetElement.getBoundingClientRect().top + start;
-  const distance = targetPosition - start;
-  let startTime = null;
+// ===== Smooth scroll robusto com offset e cancelamento =====
+(() => {
+  const HEADER_HEIGHT =
+    document.querySelector('.site-header')?.offsetHeight || 0; // ajuste se tiver header fixo
+  const DURATION = 800; // ms (reduzir ajuda a tirar “travadinhas”)
+  let rafId = null;
 
-  function easeInOutQuad(t, b, c, d) {
-    t /= d/2;
-    if (t < 1) return c/2*t*t + b;
-    t--;
-    return -c/2 * (t*(t-2) -1) + b;
+  const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+  function cancelScroll() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    window.removeEventListener('wheel', cancelScroll, { passive: true });
+    window.removeEventListener('touchstart', cancelScroll, { passive: true });
   }
 
-  function animation(currentTime) {
-    if (!startTime) startTime = currentTime;
-    const timeElapsed = currentTime - startTime;
-    const run = easeInOutQuad(timeElapsed, start, distance, duration);
-    window.scrollTo(0, run);
-    if (timeElapsed < duration) {
-      requestAnimationFrame(animation);
+  function smoothScrollToY(targetY, duration = DURATION) {
+    cancelScroll();
+    if (prefersReduced || duration <= 0) {
+      window.scrollTo(0, targetY);
+      return;
     }
+
+    const startY = window.pageYOffset;
+    const dist = targetY - startY;
+    const startTime = performance.now();
+
+    // cancelar se usuário rolar manualmente
+    window.addEventListener('wheel', cancelScroll, { passive: true, once: true });
+    window.addEventListener('touchstart', cancelScroll, { passive: true, once: true });
+
+    function step(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / duration);
+      const eased = easeOutCubic(t);
+      const y = startY + dist * eased;
+
+      window.scrollTo(0, Math.round(y));
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(step);
+      } else {
+        cancelScroll();
+      }
+    }
+
+    rafId = requestAnimationFrame(step);
   }
 
-  requestAnimationFrame(animation);
-}
+  function getTargetY(el) {
+    const rect = el.getBoundingClientRect();
+    return Math.max(0, rect.top + window.pageYOffset - HEADER_HEIGHT);
+  }
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function(e) {
-    e.preventDefault();
-    const targetID = this.getAttribute('href');
-    const target = document.querySelector(targetID);
-    if (target) {
-      smoothScrollTo(target, 1500); // Duração em ms, ajuste para mais lento ou rápido ao clicar no botão e descer a tela
-    }
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+      const id = anchor.getAttribute('href');
+      if (!id || id === '#') return;
+      const target = document.querySelector(id);
+      if (!target) return;
+
+      e.preventDefault();
+      const y = getTargetY(target);
+      smoothScrollToY(y);
+    });
   });
-});
+})();
+
 
 // modal que fala sobre o dezembro laranja //
 document.addEventListener('DOMContentLoaded', function() {
@@ -61,47 +97,77 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // e-mail do cliente //
 
-function enviarLocalizacao() {
-  const email = document.getElementById('email').value.trim();
+document.addEventListener('DOMContentLoaded', () => {
+  const emailEl = document.getElementById('email');
+  const msgEl   = document.getElementById('mensagem');
+  const btn     = document.getElementById('btn-cadastrar');
 
-  if (!email) {
-    mostrarMensagem('Por favor, preencha o e-mail.', true);
+  if (!emailEl || !btn) {
+    console.error('IDs não encontrados (email / btn-cadastrar). Confira o HTML.');
     return;
   }
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      const data = {
-        email: email,
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      };
+  // 🔹 modo recomendado (sem onclick no HTML)
+  btn.addEventListener('click', enviarLocalizacao);
 
-      fetch('/cadastro_email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(data => {
-        mostrarMensagem(data.message, !data.success);
-        document.getElementById('email').value = '';
-      })
-      .catch(() => mostrarMensagem('Erro ao enviar os dados.', true));
-    }, function(error) {
+  // 🔹 compatibilidade: se ainda existir onclick="enviarLocalizacao()", funciona
+  window.enviarLocalizacao = enviarLocalizacao;
+
+  function enviarLocalizacao() {
+    const email = (emailEl.value || '').trim();
+
+    if (!msgEl) console.warn('Elemento #mensagem não encontrado (mensagens não serão exibidas).');
+
+    if (!email) {
+      mostrarMensagem('Por favor, preencha o e-mail.', true);
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      mostrarMensagem('Geolocalização não suportada no seu navegador.', true);
+      return;
+    }
+
+    mostrarMensagem('Coletando localização…');
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      mostrarMensagem('Enviando…');
+
+      try {
+        const resp = await fetch('/cadastro_email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          })
+        });
+
+        // trata erros HTTP (400/409/500) mostrando a mensagem do servidor
+        if (!resp.ok) {
+          const txt = await resp.text().catch(() => '');
+          throw new Error(txt || `Falha no cadastro (HTTP ${resp.status})`);
+        }
+
+        const data = await resp.json().catch(() => ({}));
+        mostrarMensagem(data.message || 'Cadastro realizado! ✅', false);
+        emailEl.value = '';
+      } catch (e) {
+        console.error(e);
+        mostrarMensagem('Erro ao enviar os dados. ' + (e.message || ''), true);
+      }
+    }, (error) => {
       mostrarMensagem('Não foi possível obter a localização: ' + error.message, true);
-    });
-  } else {
-    mostrarMensagem('Geolocalização não suportada no seu navegador.', true);
+    }, { enableHighAccuracy: true, timeout: 8000 });
   }
-}
 
-function mostrarMensagem(texto, isError) {
-  const div = document.getElementById('mensagem');
-  div.textContent = texto;
-  div.className = isError ? 'error' : 'msg';
-}
-
+  function mostrarMensagem(texto, isError) {
+    if (!msgEl) return;
+    msgEl.textContent = texto;
+    msgEl.className = isError ? 'error' : 'msg';
+  }
+});
 
 // ajustes dos cards embaixo //
 

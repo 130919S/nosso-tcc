@@ -10,9 +10,10 @@
 <header>
   <nav class="topo-flex">
     <div class="form-navegacao">
-      <input type="email" id="email" placeholder="Receba alertas de radiação UV" required />
-      <button type="button" class="botao-menu" onclick="enviarLocalizacao()">Cadastrar e-mail</button>
-    </div>
+  <input type="email" id="email" placeholder="Receba alertas de radiação UV" required />
+  <button type="button" id="btn-cadastrar" class="botao-menu">Cadastrar e-mail</button>
+</div>
+<span id="mensagem"></span>
 
     <ul class="menu-links">
       <li><a href="#">Gráficos</a></li>
@@ -124,32 +125,8 @@
 </section>
 
 
-    
-        <section id="prevencao" class="cuidados">
-  <div class="diarios">
-    <h2>Cuidados Diários Contra o Câncer de Pele</h2>
-  </div>
-  <ul class="lista-cuidados">
-    <li class="prevencao">
-      <strong>Evite o sol entre 10h e 16h.</strong> É nesse período que os raios UV atingem níveis mais perigosos.
-    </li>
-    <li class="prevencao">
-      <strong>Use protetor solar com FPS 30 ou superior.</strong> Aplique 30 minutos antes e reaplique.
-    </li>
-    <li class="prevencao">
-      <strong>Vista-se de forma consciente.</strong> Roupas longas e escuras ajudam a proteger.
-    </li>
-    <li class="prevencao">
-      <strong>Busque sombra sempre que possível.</strong> Mesmo em dias nublados, os raios UV causam danos.
-    </li>
-    <li class="prevencao">
-      <strong>Fique atenta aos sinais na pele.</strong> Pintas e manchas devem ser avaliadas por dermatologistas.
-    </li>
-    <li class="prevencao">
-      <strong>Não negligencie o inverno.</strong> 80% dos raios UV atravessam as nuvens.
-    </li>
-  </ul>
-</section>
+
+
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
@@ -231,25 +208,6 @@
   </div>
 </div>
 
-<!-- teste de conhecimento, quiz-->
-
-<section id="quiz" class="quiz-container">
-  <h2>Teste seus conhecimentos sobre o Câncer de Pele</h2>
-
-  <!-- Barra de progresso -->
-  <div class="quiz-progress">
-    <div class="progress-bar" id="barra-progresso"></div>
-  </div>
-
-  <!-- Onde a pergunta será exibida -->
-  <div id="pergunta-container"></div>
-
-  <!-- Botão de próxima pergunta -->
-  <button id="botao-proximo" class="botao-menu">Próxima</button>
-
-  <!-- Resultado final -->
-  <div id="resultado-quiz"></div>
-</section>
 
 
 <!--<div id="alerta-uv"></div>-->
@@ -421,7 +379,58 @@
 <script src="/static/script.js"></script>
 
 
+<!-- cuidados diarios-->
 
+<section class="secao-cuidados-quiz">
+  
+  <div class="cuidados-container">
+    <!-- Cuidados Diários -->
+    <section id="prevencao" class="cuidados">
+      <div class="diarios">
+        <h2>Cuidados Diários Contra o Câncer de Pele</h2>
+      </div>
+      <ul class="lista-cuidados">
+        <li class="prevencao">
+          <strong>Evite o sol entre 10h e 16h.</strong> É nesse período que os raios UV atingem níveis mais perigosos.
+        </li>
+        <li class="prevencao">
+          <strong>Use protetor solar com FPS 30 ou superior.</strong> Aplique 30 minutos antes e reaplique.
+        </li>
+        <li class="prevencao">
+          <strong>Vista-se de forma consciente.</strong> Roupas longas e escuras ajudam a proteger.
+        </li>
+        <li class="prevencao">
+          <strong>Busque sombra sempre que possível.</strong> Mesmo em dias nublados, os raios UV causam danos.
+        </li>
+        <li class="prevencao">
+          <strong>Fique atenta aos sinais na pele.</strong> Pintas e manchas devem ser avaliadas por dermatologistas.
+        </li>
+        <li class="prevencao">
+          <strong>Não negligencie o inverno.</strong> 80% dos raios UV atravessam as nuvens.
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Quiz -->
+  <section id="quiz" class="quiz-container">
+    <h2>Teste seus conhecimentos sobre o Câncer de Pele</h2>
+
+    <!-- Barra de progresso -->
+    <div class="quiz-progress">
+      <div class="progress-bar" id="barra-progresso"></div>
+    </div>
+
+    <!-- Onde a pergunta será exibida -->
+    <div id="pergunta-container"></div>
+
+    <!-- Botão de próxima pergunta -->
+    <button id="botao-proximo" class="botao-menu">Próxima</button>
+
+    <!-- Resultado final -->
+    <div id="resultado-quiz"></div>
+  </section>
+</section>
 
 
 </body>
