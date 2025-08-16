@@ -317,3 +317,412 @@ document.addEventListener("DOMContentLoaded", () => {
 
   exibirPergunta(); // Inicia com a primeira pergunta
 });
+
+// busca de dermatologista // 
+
+// arquivo: busca-derm.js
+// arquivo: busca-derm.js
+document.addEventListener('DOMContentLoaded', () => {
+  // =========================
+  // Seletores / Estado
+  // =========================
+  const mapEl = document.getElementById('mapDerm');
+  const listaEl = document.getElementById('listaDerm');
+  const btnBuscar = document.getElementById('btnBuscar');
+  const radiusSelect = document.getElementById('radiusKm');
+  const tipoSelect = document.getElementById('tipoLocal');
+  const filtroGestao = document.getElementById('filtroGestao');
+
+  const inputEndereco = document.getElementById('enderecoBusca');
+  const btnEndereco = document.getElementById('btnEndereco');
+  const btnUsarGps = document.getElementById('btnUsarGps');
+
+  if (!mapEl || !listaEl || !btnBuscar || !radiusSelect || !tipoSelect) {
+    console.error('busca-derm: elementos não encontrados. Verifique os IDs no HTML.');
+    return;
+  }
+
+  let map, userMarker, userAccCircle, markersLayer;
+  let userPos = { lat: -14.235, lon: -51.9253 }; // centro do Brasil
+  const MAX_RESULTS = 30;
+
+  // Mantém último conjunto já filtrado por Tipo (hospital/clinic/derm)
+  let lastBaseList = []; // [{id, lat, lon, tags, name, addr, phone, website, score, dist, own}]
+
+  // =========================
+  // Utilidades
+  // =========================
+  function setStatus(msg) {
+    listaEl.innerHTML = `<li>${msg}</li>`;
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    const toRad = v => (v * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+  }
+
+  // =========================
+  // Mapa e localização do usuário
+  // =========================
+  function initMap(lat, lon) {
+    if (!map) {
+      map = L.map(mapEl).setView([lat, lon], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+      markersLayer = L.layerGroup().addTo(map);
+
+      // clicar no mapa reposiciona a localização do usuário
+      map.on('click', (e) => {
+        setUserLocation(e.latlng.lat, e.latlng.lng, 50);
+      });
+    } else {
+      map.setView([lat, lon], 14);
+      markersLayer.clearLayers();
+    }
+    setUserLocation(lat, lon);
+  }
+
+  function setUserLocation(lat, lon, accuracyMeters = null) {
+    userPos = { lat, lon };
+
+    if (userMarker) userMarker.remove();
+    userMarker = L.marker([lat, lon], { title: 'Sua posição', draggable: true })
+      .addTo(map)
+      .bindPopup('Sua localização (arraste para ajustar)').openPopup();
+
+    userMarker.on('dragend', () => {
+      const { lat: nlat, lng: nlon } = userMarker.getLatLng();
+      setUserLocation(nlat, nlon, 30);
+    });
+
+    if (userAccCircle) userAccCircle.remove();
+    if (accuracyMeters && Number.isFinite(accuracyMeters)) {
+      userAccCircle = L.circle([lat, lon], {
+        radius: Math.max(accuracyMeters, 20),
+        color: '#4da3ff',
+        fillColor: '#4da3ff',
+        fillOpacity: 0.1,
+        weight: 1
+      }).addTo(map);
+    }
+  }
+
+  function getUserLocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject(new Error('Geolocalização não suportada.'));
+      navigator.geolocation.getCurrentPosition(
+        pos => resolve(pos),
+        err => reject(err),
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    });
+  }
+
+  // =========================
+  // Overpass (consulta OSM)
+  // =========================
+  function buildOverpassQuery(lat, lon, radiusMeters, tipo) {
+    const around = `around:${radiusMeters},${lat},${lon}`;
+    const blocks = [];
+
+    // Geral – hospitais
+    if (tipo === 'hospital' || tipo === 'all') {
+      blocks.push(`node[amenity=hospital](${around}); way[amenity=hospital](${around}); relation[amenity=hospital](${around});`);
+    }
+    // Geral – clínicas
+    if (tipo === 'clinic' || tipo === 'all') {
+      blocks.push(`node[amenity=clinic](${around}); way[amenity=clinic](${around}); relation[amenity=clinic](${around});`);
+      blocks.push(`node[healthcare=clinic](${around}); way[healthcare=clinic](${around}); relation[healthcare=clinic](${around});`);
+    }
+    // Dermatologia (foco em especialidade)
+    if (tipo === 'derm') {
+      // médicos/consultórios com especialidade dermatologia
+      blocks.push(`node[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around}); way[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around}); relation[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around});`);
+      blocks.push(`node[healthcare=doctor]["healthcare:specialty"~"dermatology",i](${around}); way[healthcare=doctor]["healthcare:specialty"~"dermatology",i](${around}); relation[healthcare=doctor]["healthcare:specialty"~"dermatology",i](${around});`);
+      blocks.push(`node["medical_specialty"~"dermatology",i](${around}); way["medical_specialty"~"dermatology",i](${around}); relation["medical_specialty"~"dermatology",i](${around});`);
+      // departamentos de dermatologia
+      blocks.push(`node[department=dermatology](${around}); way[department=dermatology](${around}); relation[department=dermatology](${around});`);
+      // fallback por nome
+      blocks.push(`node["name"~"Dermatolog|Dermato|Pele",i](${around}); way["name"~"Dermatolog|Dermato|Pele",i](${around}); relation["name"~"Dermatolog|Dermato|Pele",i](${around});`);
+    }
+
+    // No modo "all", além do geral, também puxamos itens com especialidade
+    if (tipo === 'all') {
+      blocks.push(`node[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around}); way[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around}); relation[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around});`);
+      blocks.push(`node["medical_specialty"~"dermatology",i](${around}); way["medical_specialty"~"dermatology",i](${around}); relation["medical_specialty"~"dermatology",i](${around});`);
+    }
+
+    // Consulta ampliada (nodes + ways + relations) e pedindo centro geométrico
+    return `
+      [out:json][timeout:40];
+      (
+        ${blocks.join('\n')}
+      );
+      out center;
+    `;
+  }
+
+  async function fetchOverpass(query) {
+    const body = new URLSearchParams({ data: query });
+    const opts = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      body
+    };
+    const endpoints = [
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.kumi.systems/api/interpreter'
+    ];
+    let lastErr;
+    for (const url of endpoints) {
+      try {
+        console.log('Overpass →', url);
+        const resp = await fetch(url, opts);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return await resp.json();
+      } catch (e) {
+        console.warn('Falha endpoint:', url, e);
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error('Falha Overpass');
+  }
+
+  function normalizeElement(e) {
+    const lat = e.lat ?? e.center?.lat;
+    const lon = e.lon ?? e.center?.lon;
+    const tags = e.tags || {};
+    const name = tags.name || 'Estabelecimento de saúde';
+    const addr = [tags['addr:street'] || '', tags['addr:housenumber'] || '', tags['addr:city'] || '']
+      .filter(Boolean).join(', ');
+    const phone = tags.phone || tags.contact_phone || '';
+    const website = tags.website || tags.contact_website || '';
+    return { id: e.type + '/' + e.id, lat, lon, tags, name, addr, phone, website };
+  }
+
+  // =========================
+  // Filtros de Dermatologia / Gestão
+  // =========================
+  function hasDermSpecialty(tags = {}) {
+    const t = (k) => (tags[k] || '').toString().toLowerCase();
+    const anyIncludes = (...vals) => vals.some(v => v && /dermato|dermatolog|skin|pele/.test(v));
+    if (anyIncludes(t('healthcare:speciality'), t('healthcare:specialty'), t('medical_specialty'), t('department'))) return true;
+    if (anyIncludes(t('name'))) return true;
+    if (anyIncludes(t('speciality'), t('specialty'))) return true;
+    return false;
+  }
+
+  function dermScore(tags = {}) {
+    const t = (k) => (tags[k] || '').toString().toLowerCase();
+    let s = 0;
+    if (/dermato|dermatolog/.test(t('name'))) s += 3;
+    if (/dermatology|dermatologia|skin|pele/.test(
+      t('healthcare:speciality') || t('healthcare:specialty') || t('medical_specialty') || ''
+    )) s += 4;
+    if (/dermatology/.test(t('department'))) s += 2;
+    if ((tags.healthcare || '') === 'doctor') s += 1;
+    return s;
+  }
+
+  // Inferir gestão (público/privado) a partir das tags
+  function inferOwnership(tags = {}) {
+    const v = (k) => (tags[k] || '').toString().toLowerCase();
+
+    const opType = v('operator:type'); // public/private/charity/…
+    const ownership = v('ownership');   // public/private/municipal/state/…
+    const operator = v('operator');     // texto livre (Prefeitura, SUS, Unimed…)
+
+    // checks diretos
+    if (['public', 'government', 'municipal', 'state', 'federal'].includes(opType)) return 'public';
+    if (opType === 'private') return 'private';
+
+    if (/(^|\b)(public|government|municipal|state|federal)(\b|$)/.test(ownership)) return 'public';
+    if (/private/.test(ownership)) return 'private';
+
+    // heurísticas pelo operador
+    if (/(prefeitura|municipal|estadual|federal|secretaria|sus|ubs|posto de saúde|hospital universit[aá]rio)/.test(operator)) {
+      return 'public';
+    }
+    if (/(santa casa|miseric[óo]rdia|irmandade|filant|benefic|unimed|hapvida|amil|bradesco|prevent senior)/.test(operator)) {
+      // filantrópicos e planos tratamos como privados para o filtro simples
+      return 'private';
+    }
+
+    return 'unknown';
+  }
+
+  function ownershipBadge(own) {
+    if (own === 'public') return { label: 'Público', cls: 'badge badge-public' };
+    if (own === 'private') return { label: 'Privado', cls: 'badge badge-private' };
+    return { label: 'Indefinido', cls: 'badge badge-unknown' };
+  }
+
+  // =========================
+  // Renderização + Filtro de Gestão
+  // =========================
+  function renderListAndMarkers(baseList) {
+    markersLayer.clearLayers();
+
+    // aplica filtro de gestão sem nova consulta
+    const mode = (filtroGestao?.value || 'all');
+    let lista = baseList.filter(p => {
+      if (mode === 'public') return p.own === 'public';
+      if (mode === 'private') return p.own === 'private';
+      return true; // all
+    });
+
+    if (!lista.length) {
+      setStatus('Nenhum resultado para este filtro. Tente alterar a gestão, o tipo ou aumentar o raio.');
+      return;
+    }
+
+    lista = lista.slice(0, MAX_RESULTS);
+
+    const frag = document.createDocumentFragment();
+    for (const p of lista) {
+      const m = L.marker([p.lat, p.lon]).addTo(markersLayer);
+      m.bindPopup(`
+        <strong>${p.name}</strong><br/>
+        ${p.addr || 'Endereço não informado'}<br/>
+        ${p.phone ? '☎ ' + p.phone + '<br/>' : ''}
+        <a href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${userPos.lat}%2C${userPos.lon}%3B${p.lat}%2C${p.lon}" target="_blank">Rota (OSM)</a> |
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank">Rota (Google)</a>
+        ${p.website ? `<br/><a href="${p.website}" target="_blank" rel="noopener">Site</a>` : ''}
+      `);
+
+      const { label, cls } = ownershipBadge(p.own);
+
+      const li = document.createElement('li');
+      li.className = 'busca-derm__item';
+      li.innerHTML = `
+        <div class="busca-derm__title">
+          ${p.name}
+          <span class="${cls}">${label}</span>
+        </div>
+        <div class="busca-derm__meta">${p.addr || 'Endereço não informado'} • ${p.dist.toFixed(1)} km</div>
+        <div class="busca-derm__links">
+          <a href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${userPos.lat}%2C${userPos.lon}%3B${p.lat}%2C${p.lon}" target="_blank">Rota (OSM)</a>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank">Rota (Google)</a>
+          ${p.phone ? `<a href="tel:${p.phone.replace(/\s+/g,'')}">Ligar</a>` : ''}
+          ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">Site</a>` : ''}
+        </div>
+      `;
+      li.addEventListener('mouseenter', () => m.openPopup());
+      li.addEventListener('click', () => {
+        map.setView([p.lat, p.lon], 16);
+        m.openPopup();
+      });
+      frag.appendChild(li);
+    }
+
+    listaEl.innerHTML = '';
+    listaEl.appendChild(frag);
+  }
+
+  function renderResults(elements, filtroTipo) {
+    if (!elements.length) {
+      setStatus('Nenhum resultado encontrado neste raio. Tente aumentar o raio ou mudar o tipo.');
+      return;
+    }
+
+    // normaliza
+    const norm = elements.map(normalizeElement).filter(p => p.lat && p.lon);
+
+    // se derm, força especialidade; se vazio, fallback por nome
+    let lista = norm;
+    if (filtroTipo === 'derm') {
+      let dermOnly = norm.filter(p => hasDermSpecialty(p.tags));
+      if (!dermOnly.length) dermOnly = norm.filter(p => /dermato|dermatolog|pele|skin/i.test(p.name));
+      lista = dermOnly;
+      if (!lista.length) {
+        setStatus('Nenhum local com dermatologia encontrado neste raio. Tente aumentar o raio ou usar "Todos".');
+        return;
+      }
+    }
+
+    // enriquece com score de derm, distância e gestão
+    const enriched = lista
+      .map(p => {
+        const dist = haversineKm(userPos.lat, userPos.lon, p.lat, p.lon);
+        const own = inferOwnership(p.tags);
+        return { ...p, score: dermScore(p.tags), dist, own };
+      })
+      .sort((a, b) => (b.score - a.score) || (a.dist - b.dist));
+
+    // guarda base para re-filtrar por gestão sem nova consulta
+    lastBaseList = enriched;
+
+    renderListAndMarkers(lastBaseList);
+  }
+
+  // =========================
+  // Busca principal
+  // =========================
+  async function buscar() {
+    setStatus('Buscando locais próximos…');
+    const radiusKm = parseInt(radiusSelect.value, 10);
+    const tipo = tipoSelect.value;
+    const query = buildOverpassQuery(userPos.lat, userPos.lon, radiusKm * 1000, tipo);
+    try {
+      const data = await fetchOverpass(query);
+      const elements = Array.isArray(data.elements) ? data.elements : [];
+      console.log('Overpass retornou', elements.length, 'elementos');
+      renderResults(elements, tipo);
+    } catch (err) {
+      console.error(err);
+      setStatus('Erro ao buscar locais. Tente novamente em instantes.');
+    }
+  }
+
+  // =========================
+  // Eventos da UI
+  // =========================
+  btnBuscar.addEventListener('click', buscar);
+
+  // re-filtra instantaneamente por gestão (sem nova consulta)
+  filtroGestao?.addEventListener('change', () => {
+    if (!lastBaseList.length) return;
+    renderListAndMarkers(lastBaseList);
+  });
+
+  btnUsarGps?.addEventListener('click', async () => {
+    try {
+      const pos = await getUserLocation();
+      initMap(pos.coords.latitude, pos.coords.longitude);
+      setUserLocation(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy || 100);
+    } catch (e) {
+      alert('Não foi possível obter sua localização. Use HTTPS/localhost e permita a permissão de localização.');
+    }
+  });
+
+  btnEndereco?.addEventListener('click', async () => {
+    const q = (inputEndereco?.value || '').trim();
+    if (!q) return alert('Digite um endereço ou cidade.');
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=pt-BR&countrycodes=br&q=${encodeURIComponent(q)}`;
+      const r = await fetch(url);
+      const data = await r.json();
+      if (!data.length) return alert('Endereço não encontrado.');
+      const { lat, lon } = data[0];
+      initMap(parseFloat(lat), parseFloat(lon));
+      setUserLocation(parseFloat(lat), parseFloat(lon), 30);
+    } catch (e) {
+      console.error(e);
+      alert('Falha ao buscar endereço.');
+    }
+  });
+
+  // =========================
+  // Inicialização
+  // =========================
+  initMap(userPos.lat, userPos.lon);
+});
+
+
+

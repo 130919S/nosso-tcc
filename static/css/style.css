@@ -791,3 +791,240 @@ html {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+/* === Seção de Custos: câncer de pele === */
+.custos-pele {
+  background: #0b0b0b; /* mantém o padrão escuro do seu site */
+  color: #f3f3f3;
+  padding: 64px 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.custos-pele .container-custos {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.custos-pele h2 {
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem);
+  margin-bottom: 12px;
+}
+.custos-pele .lead {
+  color: #cfcfcf;
+  margin-bottom: 20px;
+}
+.custos-pele .custos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+}
+.custos-pele .custos-lista li {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.custos-pele a { color: #8ad6ff; text-decoration: underline; }
+.custos-pele a:hover { opacity: 0.9; }
+
+.custos-pele .custos-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+.custos-pele .card-custo {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+.custos-pele .card-custo h3 {
+  font-size: 1.05rem;
+  margin: 0 0 6px 0;
+}
+.custos-pele .referencia {
+  font-size: 0.92rem;
+  color: #c9c9c9;
+  margin-top: 8px;
+}
+
+.custos-pele .nota {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255,200,0,0.08);
+  border: 1px solid rgba(255,200,0,0.3);
+}
+.custos-pele details.fontes {
+  margin-top: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.custos-pele details.fontes summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.custos-pele details.fontes ul {
+  margin: 8px 0 0 16px;
+}
+.custos-pele details.fontes li {
+  margin-bottom: 6px;
+}
+
+/* busca de dermatologista */
+
+.busca-derm {
+  padding: 48px 16px;
+  background: #0b0b0b;
+  color: #f3f3f3;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.busca-derm h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+}
+
+.busca-derm p {
+  color: #cfcfcf;
+  margin: 0 0 14px;
+}
+
+.busca-derm__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.busca-derm__controls select,
+.busca-derm__controls button {
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.busca-derm__controls button {
+  cursor: pointer;
+}
+
+.busca-derm__map {
+  width: 100%;
+  height: 420px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.busca-derm__lista {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.busca-derm__item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.busca-derm__title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.busca-derm__meta {
+  color: #c9c9c9;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.busca-derm__links a {
+  color: #8ad6ff;
+  margin-right: 10px;
+  text-decoration: underline;
+}
+
+.busca-derm__nota {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #d7d7d7;
+}
+
+@media (max-width: 640px) {
+  .busca-derm__map {
+    height: 340px;
+  }
+}
+
+.busca-derm__locfix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 10px 0 12px;
+}
+.busca-derm__locfix input {
+  flex: 1 1 260px;
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.busca-derm__locfix button {
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.busca-derm__locfix small {
+  color: #c9c9c9;
+  width: 100%;
+}
+
+/* Controle novo */
+#filtroGestao {
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+/* Badge de gestão (público/privado/indefinido) */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+.badge-public {
+  color: #a7f3d0; /* mint claro */
+  background: rgba(16,185,129,0.12);
+  border-color: rgba(16,185,129,0.35);
+}
+.badge-private {
+  color: #c7b7ff; /* lilás claro */
+  background: rgba(139,92,246,0.12);
+  border-color: rgba(139,92,246,0.35);
+}
+.badge-unknown {
+  color: #e5e7eb;
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.18);
+}
+

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Proteção Solar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="busca-derm.css">
+
 
 </head>
 <body>
@@ -431,6 +433,172 @@
     <div id="resultado-quiz"></div>
   </section>
 </section>
+<section id="custos-pele" class="custos-pele">
+  <div class="container-custos">
+    <h2>Quanto custa tratar câncer de pele?</h2>
+    <p class="lead">
+      Os valores abaixo são referências gerais e podem variar por tipo, estágio, conduta e atualização de tabelas.
+    </p>
+
+    <ul class="custos-lista">
+      <li>
+        <strong>Gastos de internações 2024</strong>
+  Em 2024, o SUS destinou aproximadamente <strong>R$ 61,7 milhões</strong> apenas para internações relacionadas a câncer de pele não melanoma,
+    considerando todos os estados brasileiros.
+  <a href="https://anadem.org.br/2025/04/08/internacoes-pelos-3-tipos-de-cancer-mais-frequentes-custaram-r-620-mil-em-2024/" target="_blank" rel="noopener">ANADEM – Relatório de custos hospitalares</a>.
+</li>
+      <li>
+        <strong>Melanoma inicial:</strong> cirurgia + seguimento. Estágios avançados concentram a maior parte do gasto total.
+      </li>
+      <li>
+        <strong>Melanoma avançado:</strong> pode requerer imunoterapia (pembrolizumabe/nivolumabe) e/ou terapias-alvo,
+        com alto impacto orçamentário.
+      </li>
+      <li>
+        <strong>Custos hospitalares observados (amostras):</strong> levantamentos indicam milhões de reais somados em períodos de 1–2 anos;
+        não é custo por paciente.
+      </li>
+    </ul>
+
+    <div class="custos-cards">
+      <article class="card-custo">
+        <h3>Custo por sessão: terapia fotodinâmica vs cirurgia</h3>
+  <p>
+    A terapia fotodinâmica para carcinoma basocelular superficial ou nodular tem custo estimado entre
+    <strong>R$ 779,05 e R$ 2.567,25</strong> por sessão, enquanto a excisão cirúrgica apresenta custo médio de
+    <strong>R$ 576,88</strong>.
+  </p>
+  <p class="referencia">
+    Fonte: <a href="https://www.gov.br/conitec/pt-br/midias/relatorios/2023/procedimento-terapia-fotodinamica-para-tratamento-de-carcinoma-basocelular-superficial-e-nodular" target="_blank" rel="noopener">
+      CONITEC – Relatório de custo-efetividade (2023)
+    </a>
+  </p>
+      </article>
+
+      <article class="card-custo">
+        <h3>Reajuste de R$ 47 milhões</h3>
+  <p>Em 2022, o Governo Federal reajustou em R$ 47 milhões os valores para tratamento quimioterápico do câncer de pele no SUS.</p>
+  <p class="referencia">
+    Fonte: <a href="https://www.gov.br/saude/pt-br/assuntos/noticias/2022/marco/governo-federal-reajusta-em-r-47-milhoes-os-valores-para-tratamento-quimioterapico-do-cancer-de-pele" target="_blank" rel="noopener">Ministério da Saúde</a>
+  </p>
+      </article>
+
+      <article class="card-custo">
+       <h3>Projeção de gastos futuros:</h3>
+  <p>O INCA estima que, em 2040, o SUS poderá gastar cerca de <strong>R$ 78,4 bilhões</strong> com o tratamento de câncer, considerando todos os tipos da doença.</p>
+  <p class="referencia">
+    Fonte: <a href="https://agenciabrasil.ebc.com.br/saude/noticia/2024-02/sus-pode-gastar-r-784-bi-em-2040-com-tratamento-de-cancer-diz-inca" target="_blank" rel="noopener">Agência Brasil</a>
+  </p>
+      </article>
+
+      <article class="card-custo">
+        <h3>Custos hospitalares observados</h3>
+        <p>Levantamento (2023–2024) indicou R$ 4,6 milhões somados em internações por melanoma (amostra mista).</p>
+        <p class="referencia">
+          Fonte: <a href="https://agenciabrasil.ebc.com.br/saude/noticia/2024-12/cancer-de-pele-gera-r-46-mi-em-custos-hospitalares-em-quase-2-anos" target="_blank" rel="noopener">Agência Brasil</a>
+        </p>
+      </article>
+    </div>
+
+    <div class="nota">
+      <p><strong>Atenção:</strong> valores são aproximados e podem mudar. Consulte seu serviço (SUS/convênio) para orçamento detalhado do seu caso.</p>
+    </div>
+
+    <details class="fontes">
+      <summary>Outras Informações</summary>
+      <ul>
+        <li>Observatório de Oncologia – Custo do câncer no SUS (visão 2022: R$ 3,9–4,0 bi; distribuição ambulatorial vs. hospitalar). <a href="https://observatoriodeoncologia.com.br/estudos/tratamento-em-oncologia/2024/custo-do-cancer-no-sus/" target="_blank" rel="noopener">Link</a></li>
+
+    <li>Observatório de Oncologia – Radioterapia no SUS (2018–2023): evolução do gasto total e <em>custo médio por procedimento</em>. <a href="https://observatoriodeoncologia.com.br/estudos/tratamento-em-oncologia/2024/panorama-da-radioterapia-no-brasil-entre-2018-e-2023/" target="_blank" rel="noopener">Link</a></li>
+
+    <li>CONITEC – Melanoma: terapias-alvo/imunoterapia (análise de <em>impacto orçamentário</em> em 5 anos com cenários de centenas de milhões a bilhões). <a href="https://www.gov.br/conitec/pt-br/midias/relatorios/2020/relatorio_541_terapiaalvo_melanoma_final_2020.pdf" target="_blank" rel="noopener">Link</a></li>
+
+    <li>Painel Oncologia – DATASUS (consultas interativas de produção e gastos oncológicos por UF/ano/procedimento). <a href="https://tabnet.datasus.gov.br/cgi/dhdat.exe?PAINEL_ONCO/PAINEL_ONCOLOGIABR.def=" target="_blank" rel="noopener">Link</a></li>
+
+    <li>Fiocruz/INCA – “Quanto custa o câncer?” (síntese de gastos federais em saúde e oncologia; contexto para comparação). <a href="https://fiocruz.br/noticia/2023/06/fiocruz-sela-parceria-com-inca-e-divulga-estudo-sobre-custos-do-cancer-no-sus" target="_blank" rel="noopener">Link</a></li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<!-- =========================
+     Seção: Buscar Dermatologista/Hospital Próximo
+     ========================= -->
+<section id="busca-derm" class="busca-derm">
+  <h2>Está com dúvida dos seus sintomas?</h2>
+  <p>Encontre um <strong>dermatologista</strong> ou <strong>hospital</strong> mais próximo e marque sua consulta.</p>
+
+  <!-- NOVOS CONTROLES: endereço + GPS + instrução -->
+  <div class="busca-derm__locfix">
+    <input id="enderecoBusca" type="text" placeholder="Digite endereço/bairro/cidade">
+    <button id="btnEndereco" type="button">Usar endereço</button>
+    <button id="btnUsarGps" type="button">Usar minha localização</button>
+    <small>Se a posição estiver errada, arraste o pino no mapa ou clique no mapa para definir.</small>
+  </div>
+
+  <!-- Controles existentes: raio + tipo + botão de busca -->
+  <div class="busca-derm__controls">
+    <label>Raio:
+      <select id="radiusKm">
+        <option value="3">3 km</option>
+        <option value="5" selected>5 km</option>
+        <option value="10">10 km</option>
+        <option value="20">20 km</option>
+      </select>
+    </label>
+
+    <label>Tipo:
+      <select id="tipoLocal">
+        <option value="all" selected>Todos</option>
+        <option value="hospital">Hospitais</option>
+        <option value="clinic">Clínicas</option>
+       
+      </select>
+    </label>
+
+     <label>Gestão:
+  <select id="filtroGestao">
+    <option value="all" selected>Todos</option>
+    <option value="public">Públicos</option>
+    <option value="private">Privados</option>
+  </select>
+</label>
+
+
+    <button id="btnBuscar" type="button">Encontrar próximos</button>
+  </div>
+
+
+  <!-- Mapa + lista de resultados -->
+  <div id="mapDerm" class="busca-derm__map"></div>
+  <ul id="listaDerm" class="busca-derm__lista"></ul>
+
+  <p class="busca-derm__nota">
+    *Resultados públicos do OpenStreetMap (podem não refletir 100% da rede real). Confirme telefone/agenda antes de ir.
+  </p>
+</section>
+
+<!-- ======== Dependências ======== -->
+<!-- CSS do Leaflet (deve estar no <head> de preferência; se não, pode ficar aqui) -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+
+<!-- (Recomendado) Seu CSS separado: inclua no <head> do site -->
+<!-- <link rel="stylesheet" href="busca-derm.css"> -->
+
+<!-- JS do Leaflet (precisa vir ANTES do seu busca-derm.js) -->
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+
+<!-- Seu JavaScript separado (versão com correções de localização/overpass/arrastar pino) -->
+<script src="busca-derm.js"></script>
 
 
 </body>
