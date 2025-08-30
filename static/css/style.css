@@ -1028,3 +1028,27 @@ html {
   border-color: rgba(255,255,255,0.18);
 }
 
+/*grafico */
+
+/* seção de gráficos */
+#grafos {
+  margin-top: 40px;
+}
+
+.grafico-card {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.grafico-container {
+  height: 340px;
+  position: relative;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #555;
+  display: block;
+  margin-top: 8px;
+}
+

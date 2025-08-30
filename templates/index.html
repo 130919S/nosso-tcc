@@ -380,6 +380,273 @@
 
 <script src="/static/script.js"></script>
 
+<!-- graficos sobre o cancer e radiação solar-->
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<script>
+  // ===== CONFIG =====
+  const API_BASE = ""; // "" = mesma origem do Flask. Se usa outra origem/porta, troque para "http://localhost:5000"
+  const MIN_YEAR = 2000, MAX_YEAR = 2023;
+
+  // ===== ELEMENTOS =====
+  const elUF    = document.getElementById("uf");
+  const elStart = document.getElementById("start");
+  const elEnd   = document.getElementById("end");
+  const elBtn   = document.getElementById("btn");
+  const elErr   = document.getElementById("error");
+  const canvas  = document.getElementById("incidenciaChart");
+
+  let chart;
+
+  // ===== HELPERS =====
+  const clamp = (n,a,z)=>Math.min(Math.max(n,a),z);
+  const toInt = (v,fb)=>{ const n = parseInt(v,10); return Number.isNaN(n)?fb:n; };
+
+  function sanitizeYears(){
+    let s = clamp(toInt(elStart.value, MIN_YEAR), MIN_YEAR, MAX_YEAR);
+    let e = clamp(toInt(elEnd.value,   MAX_YEAR), MIN_YEAR, MAX_YEAR);
+    if (e < s) [s,e] = [e,s];
+    elStart.value = String(s);
+    elEnd.value   = String(e);
+    return { start:s, end:e };
+  }
+
+  function buildUrl(){
+    const { start, end } = sanitizeYears();
+    const q = new URLSearchParams();
+    q.set("start", start); q.set("end", end);
+    if (elUF.value) q.set("uf", elUF.value.toUpperCase());
+    const base = API_BASE || ""; // mesma origem
+    return `${base}/api/incidencia/anual?${q.toString()}`;
+  }
+
+  function showError(msg, extra){
+    elErr.style.display = "block";
+    elErr.style.whiteSpace = "pre-wrap";
+    elErr.textContent = msg + (extra ? `\n${extra}` : "");
+  }
+
+  function clearError(){
+    elErr.style.display = "none";
+    elErr.textContent = "";
+  }
+
+  function renderBarChart(payload){
+    const labels = payload.series.map(d => d.year);
+    const values = payload.series.map(d => Number(d.cases || 0));
+    const titleUF = payload.meta.uf ? ` - ${payload.meta.uf}` : "";
+    const chartTitle = `Incidência Anual (${payload.meta.start}–${payload.meta.end})${titleUF}`;
+
+    if (chart) chart.destroy();
+    chart = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{ label: "Casos", data: values, borderWidth: 1 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          title: { display: true, text: chartTitle },
+          tooltip: {
+            mode: "index", intersect: false,
+            callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString("pt-BR")}` }
+          }
+        },
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: { title: { display: true, text: "Ano" }, ticks: { autoSkip: true, maxRotation: 0 } },
+          y: { title: { display: true, text: "Número de casos" }, beginAtZero: true, ticks: { precision: 0 } }
+        },
+        elements: { bar: { borderSkipped: false, barPercentage: 0.9, categoryPercentage: 0.8 } }
+      }
+    });
+  }
+
+  async function loadAndRender(){
+    if (!canvas) { showError("Canvas #incidenciaChart não encontrado."); return; }
+    clearError();
+    if (elBtn) { elBtn.disabled = true; elBtn.textContent = "Carregando..."; }
+
+    try{
+      const url = buildUrl();
+      console.log("📡 GET", url);
+      // Mostra URL chamada no painel de erro (ajuda a ver se é mesma origem)
+      showError(`Buscando: ${url}`);
+
+      const resp = await fetch(url);
+      showError(`Buscando: ${url}\nStatus: ${resp.status}`);
+
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+
+      // Resumo do payload para debug
+      showError(`Buscando: ${url}\nStatus: ${resp.status}\nseries: ${Array.isArray(data.series)?data.series.length:"N/A"} itens`);
+
+      const ok = Array.isArray(data.series) && data.series.length > 0;
+      const hasValue = ok && data.series.some(d => Number(d.cases) > 0);
+
+      if (!ok){
+        showError("A API retornou vazio. Verifique a consulta/SQL no back-end.");
+        if (chart) chart.destroy();
+        return;
+      }
+      if (!hasValue){
+        // se quiser ver zeros mesmo assim, comente este bloco
+        showError("Sem dados para esse filtro (ou todos zero).");
+        if (chart) chart.destroy();
+        return;
+      }
+
+      clearError();
+      renderBarChart(data);
+    }catch(e){
+      console.error(e);
+      showError("Erro ao carregar o gráfico.", String(e));
+      if (chart) chart.destroy();
+    }finally{
+      if (elBtn) { elBtn.disabled = false; elBtn.textContent = "Atualizar"; }
+    }
+  }
+
+  function init(){
+    // garante limites nos inputs
+    if (elStart) { elStart.min = String(MIN_YEAR); elStart.max = String(MAX_YEAR); }
+    if (elEnd)   { elEnd.min   = String(MIN_YEAR); elEnd.max   = String(MAX_YEAR); }
+    sanitizeYears();
+
+    if (elBtn) elBtn.addEventListener("click", loadAndRender);
+    loadAndRender();
+  }
+
+  document.readyState === "loading"
+    ? document.addEventListener("DOMContentLoaded", init)
+    : init();
+</script>
+
+
+
+<!--graficos-->
+
+
+
+
+<!-- =======================
+     SEÇÃO: GRÁFICOS
+     ======================= -->
+<section id="graficos" class="cards-container">
+  <h2>Gráficos</h2>
+  <div class="cards">
+
+    <div class="card scroll-reveal grafico-card">
+      <h3>Incidência anual (2000–2023)</h3>
+      <div class="grafico-container">
+        <canvas id="incidenciaChart"></canvas>
+      </div>
+      <small class="hint">Fonte: incidência (C43 + C44), 2000–2023.</small>
+    </div>
+
+    <div class="card scroll-reveal grafico-card">
+      <h3>Previsão até 2033</h3>
+      <div class="grafico-container">
+        <canvas id="forecastChart"></canvas>
+      </div>
+      <small class="hint">Tabela de previsões: <code>resultadosprevisoes_cancer_pele</code>.</small>
+    </div>
+
+    <div class="card scroll-reveal grafico-card">
+      <h3>Correlação: Câncer x UV médio anual</h3>
+      <div class="grafico-container">
+        <canvas id="correlacaoChart"></canvas>
+      </div>
+      <div id="corrValor" class="hint"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SCRIPTS (ordem importa): Chart.js → dados → desenho -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/js/charts-data.js"></script>
+<script>
+  // 1) Incidência
+  (function(){
+    const d = window.CHARTS?.incidencia || {years:[], cases:[]};
+    const el = document.getElementById("incidenciaChart");
+    if(!el || !d.years.length) return;
+    new Chart(el.getContext("2d"), {
+      type: "bar",
+      data: { labels: d.years, datasets: [{ label: "Casos (C43 + C44)", data: d.cases }] },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+        scales: {
+          x: { title: { display: true, text: "Ano" } },
+          y: { title: { display: true, text: "Casos" }, beginAtZero: true }
+        }
+      }
+    });
+  })();
+
+  // 2) Preditivo
+  (function(){
+    const h = window.CHARTS?.incidencia || {years:[], cases:[]};
+    const f = window.CHARTS?.forecast   || {years:[], cases:[]};
+    const el = document.getElementById("forecastChart");
+    if(!el || (!h.years.length && !f.years.length)) return;
+    new Chart(el.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: [...h.years, ...f.years],
+        datasets: [
+          { label: "Histórico", data: [...h.cases, ...Array(f.cases.length).fill(null)], borderWidth: 2, tension: 0.2 },
+          { label: "Previsão",  data: [...Array(h.cases.length).fill(null), ...f.cases],  borderWidth: 2, borderDash: [6,6], tension: 0.2 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+        scales: {
+          x: { title: { display: true, text: "Ano" } },
+          y: { title: { display: true, text: "Casos" }, beginAtZero: true }
+        }
+      }
+    });
+  })();
+
+  // 3) Correlação
+  (function(){
+    const c = window.CHARTS?.correlacao || {years:[], cases:[], uv:[], pearson:null};
+    const el = document.getElementById("correlacaoChart");
+    if(!el || !c.years.length) return;
+    new Chart(el.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: c.years,
+        datasets: [
+          { label: "Casos (C43 + C44)", data: c.cases, yAxisID: "y" },
+          { label: "UV médio anual",   data: c.uv,    yAxisID: "y1" }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: "index", intersect: false },
+        plugins: { legend: { display: true } },
+        scales: {
+          y:  { type: "linear", position: "left",  title: { display: true, text: "Casos" }, beginAtZero: true },
+          y1: { type: "linear", position: "right", title: { display: true, text: "UV médio" }, grid: { drawOnChartArea: false } },
+          x:  { title: { display: true, text: "Ano" } }
+        }
+      }
+    });
+    const corr = (typeof c.pearson === "number") ? c.pearson.toFixed(3) : "—";
+    const corrDiv = document.getElementById("corrValor");
+    if (corrDiv) corrDiv.textContent = `Correlação de Pearson (casos vs UV): ${corr}`;
+  })();
+</script>
+
 
 <!-- cuidados diarios-->
 

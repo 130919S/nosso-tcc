@@ -725,4 +725,107 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// graficos //
+
+// Ajuste se sua API estiver em outra porta/origem
+const API = "http://127.0.0.1:5000"; // "" = mesma origem do Flask (recomendado). Ex.: "http://localhost:5000"
+
+async function getJSON(path){
+  const r = await fetch(`${API}${path}`);
+  if(!r.ok) throw new Error(`Erro ${r.status} ao carregar ${path}`);
+  return await r.json();
+}
+
+// 1) Incidência anual (barras)
+async function renderIncidencia(){
+  const data = await getJSON("/api/incidencia/anual");
+  const ctx = document.getElementById("incidenciaChart").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: data.years,
+      datasets: [{ label: "Casos (C43 + C44)", data: data.cases }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+      scales: {
+        x: { title: { display: true, text: "Ano" } },
+        y: { title: { display: true, text: "Casos" }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// 2) Preditivo (linhas + forecast tracejado)
+async function renderForecast(){
+  const data = await getJSON("/api/incidencia/preditivo");
+  const ctx = document.getElementById("forecastChart").getContext("2d");
+  const histLabels = data.history.years;
+  const histCases  = data.history.cases;
+  const fcLabels   = data.forecast.years;
+  const fcCases    = data.forecast.cases;
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: [...histLabels, ...fcLabels],
+      datasets: [
+        { label: "Histórico", data: [...histCases, ...Array(fcCases.length).fill(null)], borderWidth: 2, tension: 0.2 },
+        { label: "Previsão",  data: [...Array(histCases.length).fill(null), ...fcCases], borderWidth: 2, borderDash: [6,6], tension: 0.2 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
+      scales: {
+        x: { title: { display: true, text: "Ano" } },
+        y: { title: { display: true, text: "Casos" }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// 3) Correlação (eixo duplo) + Pearson
+async function renderCorrelacao(){
+  const data = await getJSON("/api/correlacao/uv");
+  const ctx = document.getElementById("correlacaoChart").getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.years,
+      datasets: [
+        { label: "Casos (C43 + C44)", data: data.cases, yAxisID: "y" },
+        { label: "UV médio anual",   data: data.uv,    yAxisID: "y1" }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: "index", intersect: false },
+      plugins: { legend: { display: true } },
+      scales: {
+        y:  { type: "linear", position: "left",  title: { display: true, text: "Casos" }, beginAtZero: true },
+        y1: { type: "linear", position: "right", title: { display: true, text: "UV médio" }, grid: { drawOnChartArea: false } },
+        x:  { title: { display: true, text: "Ano" } }
+      }
+    }
+  });
+
+  const corr = typeof data.pearson === "number" ? data.pearson.toFixed(3) : "—";
+  const el = document.getElementById("corrValor");
+  if (el) el.textContent = `Correlação de Pearson (casos vs UV): ${corr}`;
+}
+
+// Boot
+(async () => {
+  try{
+    await renderIncidencia();
+    await renderForecast();
+    await renderCorrelacao();
+  }catch(err){
+    console.error(err);
+    alert("Erro ao carregar gráficos: " + err.message);
+  }
+})();
 
