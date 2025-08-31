@@ -727,105 +727,154 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // graficos //
 
-// Ajuste se sua API estiver em outra porta/origem
-const API = "http://127.0.0.1:5000"; // "" = mesma origem do Flask (recomendado). Ex.: "http://localhost:5000"
+const API_BASE = ""; // "" = mesma origem (Flask). Se rodar API em outra porta/origem, coloque a URL aqui.
+const MIN_ANO = 2000, MAX_ANO_OBS = 2023, MAX_ANO_PREV = 2033;
 
-async function getJSON(path){
-  const r = await fetch(`${API}${path}`);
-  if(!r.ok) throw new Error(`Erro ${r.status} ao carregar ${path}`);
-  return await r.json();
+const $ = (sel) => document.querySelector(sel);
+const yrStartEl = $("#yrStart");
+const yrEndEl = $("#yrEnd");
+const btnAtualizar = $("#btnAtualizar");
+const errEl = $("#grafErro");
+
+let chartIncid, chartPred, chartCorr;
+
+function clamp(n, a, b){ return Math.min(Math.max(n, a), b); }
+function saneYears(){
+  let s = parseInt(yrStartEl.value || MIN_ANO, 10);
+  let e = parseInt(yrEndEl.value || MAX_ANO_OBS, 10);
+  s = clamp(isNaN(s)?MIN_ANO:s, 1990, MAX_ANO_PREV);
+  e = clamp(isNaN(e)?MAX_ANO_OBS:e, 1990, MAX_ANO_PREV);
+  if(e < s) [s,e] = [e,s];
+  yrStartEl.value = s;
+  yrEndEl.value = e;
+  return { start: s, end: e };
 }
 
-// 1) Incidência anual (barras)
-async function renderIncidencia(){
-  const data = await getJSON("/api/incidencia/anual");
-  const ctx = document.getElementById("incidenciaChart").getContext("2d");
-  new Chart(ctx, {
+async function jget(path){
+  const url = (API_BASE || "") + path;
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(`GET ${url} -> ${r.status}`);
+  return r.json();
+}
+
+function showError(msg){
+  if(!errEl) return;
+  errEl.textContent = msg;
+  errEl.style.display = "inline";
+}
+function clearError(){
+  if(!errEl) return;
+  errEl.textContent = "";
+  errEl.style.display = "none";
+}
+
+// =============== Gráfico 1: Barras ===============
+async function renderIncidencia(start, end){
+  const data = await jget(`/api/incidencia/anual?start=${start}&end=${Math.min(end, MAX_ANO_OBS)}`);
+  const labels = data.map(r => r.ano);
+  const valores = data.map(r => Number(r.casos || 0));
+
+  if(chartIncid) chartIncid.destroy();
+  chartIncid = new Chart($("#chartIncidencia"), {
     type: "bar",
     data: {
-      labels: data.years,
-      datasets: [{ label: "Casos (C43 + C44)", data: data.cases }]
+      labels,
+      datasets: [{ label: "Casos/ano", data: valores, borderWidth: 1 }]
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
-      scales: {
-        x: { title: { display: true, text: "Ano" } },
-        y: { title: { display: true, text: "Casos" }, beginAtZero: true }
+      scales: { y: { beginAtZero: true } },
+      plugins: {
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y.toLocaleString("pt-BR")}` } }
       }
     }
   });
 }
 
-// 2) Preditivo (linhas + forecast tracejado)
-async function renderForecast(){
-  const data = await getJSON("/api/incidencia/preditivo");
-  const ctx = document.getElementById("forecastChart").getContext("2d");
-  const histLabels = data.history.years;
-  const histCases  = data.history.cases;
-  const fcLabels   = data.forecast.years;
-  const fcCases    = data.forecast.cases;
+// =============== Gráfico 2: Preditivo ===============
+async function renderPreditivo(start, end){
+  const ate = Math.min(Math.max(end, MAX_ANO_OBS), MAX_ANO_PREV);
+  const data = await jget(`/api/preditivo/anual?start=${Math.min(start, MAX_ANO_OBS)}&end=${Math.min(end, MAX_ANO_OBS)}&ate=${ate}`);
 
-  new Chart(ctx, {
+  const labels = data.map(r => r.ano);
+  const observado = data.map(r => r.observado);
+  const previsto  = data.map(r => r.previsto);
+
+  if(chartPred) chartPred.destroy();
+  chartPred = new Chart($("#chartPreditivo"), {
     type: "line",
     data: {
-      labels: [...histLabels, ...fcLabels],
+      labels,
       datasets: [
-        { label: "Histórico", data: [...histCases, ...Array(fcCases.length).fill(null)], borderWidth: 2, tension: 0.2 },
-        { label: "Previsão",  data: [...Array(histCases.length).fill(null), ...fcCases], borderWidth: 2, borderDash: [6,6], tension: 0.2 }
+        { label: "Observado", data: observado, spanGaps: true, borderWidth: 2, tension: 0.25 },
+        { label: "Previsto",  data: previsto,  borderWidth: 2, borderDash: [6,6], pointRadius: 0, tension: 0.25 }
       ]
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: true }, tooltip: { mode: "index", intersect: false } },
-      scales: {
-        x: { title: { display: true, text: "Ano" } },
-        y: { title: { display: true, text: "Casos" }, beginAtZero: true }
-      }
+      scales: { y: { beginAtZero: true } }
     }
   });
 }
 
-// 3) Correlação (eixo duplo) + Pearson
-async function renderCorrelacao(){
-  const data = await getJSON("/api/correlacao/uv");
-  const ctx = document.getElementById("correlacaoChart").getContext("2d");
+// =============== Gráfico 3: Correlação (UV x Casos) ===============
+function trendline(xs, ys){
+  const n = xs.length;
+  const mean = arr => arr.reduce((s,v)=>s+v,0)/arr.length;
+  const mx = mean(xs), my = mean(ys);
+  let num=0, den=0;
+  for(let i=0;i<n;i++){ num += (xs[i]-mx)*(ys[i]-my); den += (xs[i]-mx)**2; }
+  const a = den===0 ? 0 : num/den;
+  const b = my - a*mx;
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  return [{x:x0, y:a*x0+b},{x:x1, y:a*x1+b}];
+}
 
-  new Chart(ctx, {
-    type: "line",
+async function renderCorrelacao(start, end){
+  const data = await jget(`/api/correlacao/uv-incidencia?start=${Math.min(start, MAX_ANO_OBS)}&end=${Math.min(end, MAX_ANO_OBS)}`);
+  const pontos = data.map(r => ({ x: Number(r.uv_medio), y: Number(r.casos) }));
+  const xs = pontos.map(p=>p.x), ys = pontos.map(p=>p.y);
+  const linha = trendline(xs, ys);
+
+  if(chartCorr) chartCorr.destroy();
+  chartCorr = new Chart($("#chartCorrelacao"), {
+    type: "scatter",
     data: {
-      labels: data.years,
       datasets: [
-        { label: "Casos (C43 + C44)", data: data.cases, yAxisID: "y" },
-        { label: "UV médio anual",   data: data.uv,    yAxisID: "y1" }
+        { label: "Anos", data: pontos, pointRadius: 4 },
+        { label: "Tendência", data: linha, type: "line", pointRadius: 0, borderWidth: 2 }
       ]
     },
     options: {
       responsive: true,
-      interaction: { mode: "index", intersect: false },
-      plugins: { legend: { display: true } },
+      parsing: false,
       scales: {
-        y:  { type: "linear", position: "left",  title: { display: true, text: "Casos" }, beginAtZero: true },
-        y1: { type: "linear", position: "right", title: { display: true, text: "UV médio" }, grid: { drawOnChartArea: false } },
-        x:  { title: { display: true, text: "Ano" } }
+        x: { title: { display: true, text: "UV médio anual (Brasil)" } },
+        y: { title: { display: true, text: "Casos anuais" }, beginAtZero: true }
       }
     }
   });
-
-  const corr = typeof data.pearson === "number" ? data.pearson.toFixed(3) : "—";
-  const el = document.getElementById("corrValor");
-  if (el) el.textContent = `Correlação de Pearson (casos vs UV): ${corr}`;
 }
 
-// Boot
-(async () => {
+// =============== Boot ===============
+async function refreshAll(){
+  clearError();
   try{
-    await renderIncidencia();
-    await renderForecast();
-    await renderCorrelacao();
-  }catch(err){
-    console.error(err);
-    alert("Erro ao carregar gráficos: " + err.message);
+    const { start, end } = saneYears();
+    await renderIncidencia(start, end);
+    await renderPreditivo(start, end);
+    await renderCorrelacao(start, end);
+  }catch(e){
+    console.error(e);
+    showError("Erro ao carregar gráficos. Verifique se a API está rodando e os endpoints existem.");
   }
-})();
+}
 
+function init(){
+  if(btnAtualizar) btnAtualizar.addEventListener("click", refreshAll);
+  refreshAll();
+}
+
+document.readyState === "loading"
+  ? document.addEventListener("DOMContentLoaded", init)
+  : init();

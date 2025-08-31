@@ -1030,25 +1030,95 @@ html {
 
 /*grafico */
 
-/* seção de gráficos */
-#grafos {
-  margin-top: 40px;
+/* ====== GRÁFICOS — layout 2x1 e tamanho médio ====== */
+
+/* a seção vira um grid: 2 colunas em telas largas, 1 no mobile */
+.graficos-tcc{
+  background:#fffbea;
+  padding: 28px 16px !important;  /* sobrepõe inline */
+  margin: 40px 0 !important;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  scroll-margin-top: 90px;        /* âncora do menu */
 }
 
-.grafico-card {
-  width: 100%;
-  margin-bottom: 30px;
+/* título ocupa a largura inteira do grid */
+.graficos-tcc > h2{
+  grid-column: 1 / -1;
+  color:#f97316;
+  text-align:center;
+  font-size: clamp(1.6rem, 1.2rem + 1vw, 2.2rem);
+  margin: 0 0 8px 0 !important;
 }
 
-.grafico-container {
-  height: 340px;
-  position: relative;
+/* cada gráfico em “card” como o resto do site */
+.grafico-bloco{
+  background:#fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  padding: 14px 16px !important;  /* sobrepõe inline */
+  margin: 0 !important;           /* remove margins inline */
+  border-left: 6px solid #f17c2c;
+  border-top: 6px solid #f17c2c;
 }
 
-.hint {
-  font-size: 0.85rem;
-  color: #555;
-  display: block;
-  margin-top: 8px;
+/* título e select padronizados */
+.grafico-bloco h3{
+  color:#f97316;
+  margin: 0 0 6px 0 !important;
+  font-weight:700;
+  font-size: 1.1rem;
 }
+.grafico-bloco label{ color:#333; }
+.grafico-bloco select{
+  background:#f78c2b;
+  color:#fff;
+  font-weight:700;
+  padding:6px 10px;
+  border:0;
+  border-radius:8px;
+  box-shadow:0 4px 8px rgba(0,0,0,.2);
+  cursor:pointer;
+}
+
+/* tamanho REAL dos gráficos (médio) */
+.grafico-bloco canvas{
+  width:100% !important;
+  height: 220px !important;   /* altura média */
+  display:block;
+}
+
+/* ====== 2 colunas em telas ≥ 992px; o último ocupa 2 colunas ====== */
+@media (min-width: 992px){
+  .graficos-tcc{
+    grid-template-columns: 1fr 1fr;  /* dois lado a lado */
+    gap: 20px;
+  }
+  #graficos .grafico-bloco:nth-of-type(3) {
+  grid-column: 1 / -1;           /* ocupa a linha inteira do grid */
+  width: min(92vw, 900px);       /* limita a largura total */
+  margin: 12px auto 24px;        /* centraliza */
+}
+
+/* tamanho do canvas só no 3º gráfico */
+#graficos .grafico-bloco:nth-of-type(3) canvas {
+  height: 200px !important;      /* ajuste fino: 180–220px se quiser */
+  width: 100% !important;
+}
+
+/* (opcional) título do 3º gráfico um pouco mais justo */
+#graficos .grafico-bloco:nth-of-type(3) h3 {
+  margin: 8px 0 6px;
+
+/* ajustes de responsividade */
+@media (max-width: 768px){
+  .grafico-bloco canvas{ height: 190px !important; }
+}
+@media (min-width: 1400px){
+  .grafico-bloco canvas{ height: 260px !important; }
+}
+@media (min-width: 1400px) {
+  #graficos .grafico-bloco:nth-of-type(3) { width: min(92vw, 980px); }
+}}}
 
