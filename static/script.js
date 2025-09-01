@@ -1,6 +1,6 @@
-// scripts.js
 
-// ===== Smooth scroll robusto com offset e cancelamento =====
+
+// ===== Smooth scroll robusto 
 (() => {
   const HEADER_HEIGHT =
     document.querySelector('.site-header')?.offsetHeight || 0; // ajuste se tiver header fixo
@@ -107,10 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // 🔹 modo recomendado (sem onclick no HTML)
+  
   btn.addEventListener('click', enviarLocalizacao);
-
-  // 🔹 compatibilidade: se ainda existir onclick="enviarLocalizacao()", funciona
+ 
   window.enviarLocalizacao = enviarLocalizacao;
 
   function enviarLocalizacao() {
@@ -320,12 +319,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // busca de dermatologista // 
 
-// arquivo: busca-derm.js
-// arquivo: busca-derm.js
+
 document.addEventListener('DOMContentLoaded', () => {
-  // =========================
+ 
   // Seletores / Estado
-  // =========================
+  
   const mapEl = document.getElementById('mapDerm');
   const listaEl = document.getElementById('listaDerm');
   const btnBuscar = document.getElementById('btnBuscar');
@@ -347,11 +345,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const MAX_RESULTS = 30;
 
   // Mantém último conjunto já filtrado por Tipo (hospital/clinic/derm)
-  let lastBaseList = []; // [{id, lat, lon, tags, name, addr, phone, website, score, dist, own}]
+  let lastBaseList = []; 
 
-  // =========================
+ 
   // Utilidades
-  // =========================
+ 
   function setStatus(msg) {
     listaEl.innerHTML = `<li>${msg}</li>`;
   }
@@ -365,9 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   }
 
-  // =========================
+  
   // Mapa e localização do usuário
-  // =========================
+  
   function initMap(lat, lon) {
     if (!map) {
       map = L.map(mapEl).setView([lat, lon], 14);
@@ -424,9 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // =========================
+
   // Overpass (consulta OSM)
-  // =========================
+ 
   function buildOverpassQuery(lat, lon, radiusMeters, tipo) {
     const around = `around:${radiusMeters},${lat},${lon}`;
     const blocks = [];
@@ -452,13 +450,13 @@ document.addEventListener('DOMContentLoaded', () => {
       blocks.push(`node["name"~"Dermatolog|Dermato|Pele",i](${around}); way["name"~"Dermatolog|Dermato|Pele",i](${around}); relation["name"~"Dermatolog|Dermato|Pele",i](${around});`);
     }
 
-    // No modo "all", além do geral, também puxamos itens com especialidade
+   
     if (tipo === 'all') {
       blocks.push(`node[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around}); way[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around}); relation[healthcare=doctor]["healthcare:speciality"~"dermatology",i](${around});`);
       blocks.push(`node["medical_specialty"~"dermatology",i](${around}); way["medical_specialty"~"dermatology",i](${around}); relation["medical_specialty"~"dermatology",i](${around});`);
     }
 
-    // Consulta ampliada (nodes + ways + relations) e pedindo centro geométrico
+
     return `
       [out:json][timeout:40];
       (
@@ -506,9 +504,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return { id: e.type + '/' + e.id, lat, lon, tags, name, addr, phone, website };
   }
 
-  // =========================
+ 
   // Filtros de Dermatologia / Gestão
-  // =========================
+
   function hasDermSpecialty(tags = {}) {
     const t = (k) => (tags[k] || '').toString().toLowerCase();
     const anyIncludes = (...vals) => vals.some(v => v && /dermato|dermatolog|skin|pele/.test(v));
@@ -530,27 +528,27 @@ document.addEventListener('DOMContentLoaded', () => {
     return s;
   }
 
-  // Inferir gestão (público/privado) a partir das tags
+  
   function inferOwnership(tags = {}) {
     const v = (k) => (tags[k] || '').toString().toLowerCase();
 
-    const opType = v('operator:type'); // public/private/charity/…
-    const ownership = v('ownership');   // public/private/municipal/state/…
-    const operator = v('operator');     // texto livre (Prefeitura, SUS, Unimed…)
+    const opType = v('operator:type'); 
+    const ownership = v('ownership');   
+    const operator = v('operator');     
 
-    // checks diretos
+  
     if (['public', 'government', 'municipal', 'state', 'federal'].includes(opType)) return 'public';
     if (opType === 'private') return 'private';
 
     if (/(^|\b)(public|government|municipal|state|federal)(\b|$)/.test(ownership)) return 'public';
     if (/private/.test(ownership)) return 'private';
 
-    // heurísticas pelo operador
+  
     if (/(prefeitura|municipal|estadual|federal|secretaria|sus|ubs|posto de saúde|hospital universit[aá]rio)/.test(operator)) {
       return 'public';
     }
     if (/(santa casa|miseric[óo]rdia|irmandade|filant|benefic|unimed|hapvida|amil|bradesco|prevent senior)/.test(operator)) {
-      // filantrópicos e planos tratamos como privados para o filtro simples
+    
       return 'private';
     }
 
@@ -563,18 +561,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return { label: 'Indefinido', cls: 'badge badge-unknown' };
   }
 
-  // =========================
-  // Renderização + Filtro de Gestão
-  // =========================
+
   function renderListAndMarkers(baseList) {
     markersLayer.clearLayers();
 
-    // aplica filtro de gestão sem nova consulta
+ 
     const mode = (filtroGestao?.value || 'all');
     let lista = baseList.filter(p => {
       if (mode === 'public') return p.own === 'public';
       if (mode === 'private') return p.own === 'private';
-      return true; // all
+      return true; 
     });
 
     if (!lista.length) {
@@ -631,10 +627,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // normaliza
+   
     const norm = elements.map(normalizeElement).filter(p => p.lat && p.lon);
 
-    // se derm, força especialidade; se vazio, fallback por nome
+  
     let lista = norm;
     if (filtroTipo === 'derm') {
       let dermOnly = norm.filter(p => hasDermSpecialty(p.tags));
@@ -646,7 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // enriquece com score de derm, distância e gestão
+
     const enriched = lista
       .map(p => {
         const dist = haversineKm(userPos.lat, userPos.lon, p.lat, p.lon);
@@ -655,15 +651,13 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .sort((a, b) => (b.score - a.score) || (a.dist - b.dist));
 
-    // guarda base para re-filtrar por gestão sem nova consulta
+    
     lastBaseList = enriched;
 
     renderListAndMarkers(lastBaseList);
   }
 
-  // =========================
-  // Busca principal
-  // =========================
+
   async function buscar() {
     setStatus('Buscando locais próximos…');
     const radiusKm = parseInt(radiusSelect.value, 10);
@@ -680,9 +674,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // =========================
-  // Eventos da UI
-  // =========================
   btnBuscar.addEventListener('click', buscar);
 
   // re-filtra instantaneamente por gestão (sem nova consulta)
@@ -718,16 +709,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // =========================
   // Inicialização
-  // =========================
+
   initMap(userPos.lat, userPos.lon);
 });
 
 
 // graficos //
 
-const API_BASE = ""; // "" = mesma origem (Flask). Se rodar API em outra porta/origem, coloque a URL aqui.
+const API_BASE = ""; 
 const MIN_ANO = 2000, MAX_ANO_OBS = 2023, MAX_ANO_PREV = 2033;
 
 const $ = (sel) => document.querySelector(sel);
@@ -856,7 +846,7 @@ async function renderCorrelacao(start, end){
   });
 }
 
-// =============== Boot ===============
+
 async function refreshAll(){
   clearError();
   try{

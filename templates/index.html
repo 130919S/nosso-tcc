@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="busca-derm.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-
 </head>
 <body>
 <header>
@@ -17,7 +15,7 @@
   <input type="email" id="email" placeholder="Receba alertas de radiação UV" required />
   <button type="button" id="btn-cadastrar" class="botao-menu">Cadastrar e-mail</button>
 </div>
-<span id="mensagem"></span>
+<span id="mensagem" role="status" aria-live="polite"></span>
 
     <ul class="menu-links">
       <li><a href="#">Gráficos</a></li>
@@ -30,7 +28,7 @@
 
      <div id="alerta-uv"></div>
 
-    <main>
+    <main id="Conteudo Principal" tabindex="-1">
 <section class="intro">
   <div class="texto">
     <div class="mini_introducao">
@@ -213,10 +211,6 @@
 </div>
 
 
-
-<!--<div id="alerta-uv"></div>-->
-<!--<script src="{{ url_for('static', filename='react/static/js/main.d89a9986.js') }}"></script>-->
-
 <!--codigo para buscar geolocalização da pessoa e mostrar a radiação UV em tempo real  -->
 
 <div id="uv-popup" style="
@@ -333,7 +327,7 @@
     }
 </script>
 
-<!-- script do front end para pegar a localização da pessoa -->
+<!-- pegar a localização da pessoa -->
 
 <script>
     function enviarLocalizacao() {
@@ -402,7 +396,6 @@
       <h3 style="margin:0;">Modelo Preditivo até 2033</h3>
       <label for="modelo"><strong>Modelo:</strong></label>
       <select id="modelo">
-        <option>Prophet</option>
         <option>ARIMA</option>
         <option>ETS</option>
       </select>
@@ -419,10 +412,6 @@
 
 >
 <script src="{{ url_for('static', filename='grafico.js') }}?v=2"></script>
-
-
-
-
 
 <!-- cuidados diarios-->
 
@@ -571,7 +560,7 @@
   <h2>Está com dúvida dos seus sintomas?</h2>
   <p>Encontre um <strong>dermatologista</strong> ou <strong>hospital</strong> mais próximo e marque sua consulta.</p>
 
-  <!-- NOVOS CONTROLES: endereço + GPS + instrução -->
+  
   <div class="busca-derm__locfix">
     <input id="enderecoBusca" type="text" placeholder="Digite endereço/bairro/cidade">
     <button id="btnEndereco" type="button">Usar endereço</button>
@@ -579,7 +568,7 @@
     <small>Se a posição estiver errada, arraste o pino no mapa ou clique no mapa para definir.</small>
   </div>
 
-  <!-- Controles existentes: raio + tipo + botão de busca -->
+  <!-- botões -->
   <div class="busca-derm__controls">
     <label>Raio:
       <select id="radiusKm">
@@ -622,7 +611,7 @@
 </section>
 
 <!-- ======== Dependências ======== -->
-<!-- CSS do Leaflet (deve estar no <head> de preferência; se não, pode ficar aqui) -->
+
 <link
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -630,19 +619,26 @@
   crossorigin=""
 />
 
-<!-- (Recomendado) Seu CSS separado: inclua no <head> do site -->
-<!-- <link rel="stylesheet" href="busca-derm.css"> -->
-
-<!-- JS do Leaflet (precisa vir ANTES do seu busca-derm.js) -->
 <script
   src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin=""
 ></script>
 
-<!-- Seu JavaScript separado (versão com correções de localização/overpass/arrastar pino) -->
-<script src="busca-derm.js"></script>
 
+<script src="busca-derm.js"></script>
+<script src="{{ url_for('static', filename='/acessibilidade.js') }}"></script>
+
+
+<!-- acessibilidade em libras-->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script> new window.VLibras.Widget('https://vlibras.gov.br/app'); </script>
 
 </body>
 </html>

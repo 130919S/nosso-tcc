@@ -1,6 +1,5 @@
-# =============================================================================
+
 # Sistema de Monitoramento de Radiação UV com Flask
-# =============================================================================
 
 from flask import Flask, render_template, request, jsonify, render_template_string
 from flask_sqlalchemy import SQLAlchemy
@@ -27,7 +26,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:%40Bruxado7
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --------------------- E-mail (Gmail) ---------------------
+# --------------------- E-mail 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -35,7 +34,7 @@ app.config['MAIL_USERNAME'] = 'radiacaouv123@gmail.com'
 app.config['MAIL_PASSWORD'] = 'hxauakmvbaaxlvfx'
 mail = Mail(app)
 
-# --------------------- Modelo ---------------------
+# --------------------- Modelo 
 class Email(db.Model):
     __tablename__ = 'emails_clientes'
     id = db.Column(db.Integer, primary_key=True)
@@ -136,7 +135,7 @@ def texto_nivel(uv):
 💡 Dica extra: mesmo em dias nublados, os raios UV continuam presentes!"""
     return "✅ Baixo. Ainda assim, proteção nunca é demais!"
 
-# --------------------- API: Cadastro de e-mail ---------------------
+# ------------------ Cadastro de e-mail ---------------------
 @app.route('/cadastro_email', methods=['POST'])
 def cadastro_email():
     data = request.get_json(silent=True) or {}
@@ -233,8 +232,8 @@ def testar_envio():
 
 # --------------------- Scheduler/Boot ---------------------
 scheduler = BackgroundScheduler(daemon=True, timezone="America/Sao_Paulo")
-# dispara todo dia às 11:55 no fuso de SP
-scheduler.add_job(envia_emails_diarios, 'cron', hour=12, minute=14, id='envio_diario_uv')
+# dispara todo dia às 8:30 no fuso de SP
+scheduler.add_job(envia_emails_diarios, 'cron', hour=8, minute=30, id='envio_diario_uv')
 
 def log_next_runs():
     for job in scheduler.get_jobs():
@@ -243,7 +242,7 @@ def log_next_runs():
 if __name__ == '__main__':
     scheduler.start()
     log_next_runs()
-    app.run(debug=True, use_reloader=False)  # use_reloader=False evita duplicar jobs em debug
+    app.run(debug=True, use_reloader=False)  
 
     # graficos sobre o cancer #
 
@@ -253,15 +252,13 @@ if __name__ == '__main__':
 import mysql.connector
 import pandas as pd
 
-# =========================
-# Flask
-# =========================
+
 app = Flask(__name__)
 app.url_map.strict_slashes = False  # evita 404 por "/" no fim
 
-# =========================
-# Conexão MySQL (ajuste se necessário)
-# =========================
+
+# Conexão MySQL 
+
 def get_db():
     return mysql.connector.connect(
         host="localhost",
@@ -271,27 +268,26 @@ def get_db():
         database="tcc"
     )
 
-# =========================
+
 # Rotas básicas
-# =========================
+
 @app.route("/ping")
 def ping():
     return "pong", 200
 
 @app.route("/")
 def index():
-    # Se já tiver templates/index.html no seu projeto, mantém render_template.
-    # Caso ainda não tenha, troque por um HTML simples só para testar.
+   
     try:
         return render_template("index.html")
     except Exception:
         return "<h1>Flask OK</h1><p>Crie templates/index.html para carregar o site completo.</p>"
 
-# =========================
+
 # 1) Histórico de incidências por ano (2000–2023)
 # Tabela: incidencia_clima_unificado_stage
 # Coluna do ano: ano_cmpt (varchar) -> CAST para número
-# =========================
+
 @app.route("/api/incidencia/anual")
 def incidencia_anual():
     start = int(request.args.get("start", 2000))
@@ -309,14 +305,14 @@ def incidencia_anual():
         conn.close()
     return jsonify(df.to_dict(orient="records"))
 
-# =========================
+
 # 2) Preditivo até 2033 (modelo selecionável)
 # Tabela: resultadosprevisoes_cancer_pele
 # Colunas: year, model, point, lo95, hi95
-# =========================
+
 @app.route("/api/preditivo/anual")
 def preditivo_anual():
-    modelo = request.args.get("modelo", "Prophet")  # Prophet | ARIMA | ETS (ou o que existir na sua tabela)
+    modelo = request.args.get("modelo", "Prophet")  # ARIMA | ETS
     conn = get_db()
     try:
         df = pd.read_sql("""
@@ -327,15 +323,15 @@ def preditivo_anual():
     finally:
         conn.close()
 
-    # Filtra pelo modelo solicitado (case-insensitive)
+    # Filtra pelo modelo solicitado 
     df = df[df["modelo"].str.upper() == modelo.upper()]
     return jsonify(df.to_dict(orient="records"))
 
-# =========================
+
 # 3) Correlação UV x Casos (média anual de UV + total anual de casos)
 # Casos/ano: incidencia_clima_unificado_stage (ano_cmpt)
 # UV: resultadosprevisoes_cancer_pele (indice_uv como varchar -> CAST p/ DECIMAL)
-# =========================
+
 @app.route("/api/correlacao/uv-incidencia")
 def correlacao_uv():
     start = int(request.args.get("start", 2000))
@@ -362,11 +358,11 @@ def correlacao_uv():
         conn.close()
     return jsonify(df.to_dict(orient="records"))
 
-# =========================
+
 # Start
-# =========================
+
 if __name__ == "__main__":
-    # imprime as rotas registradas ao iniciar (antes do 1º request)
+    # imprime as rotas registradas ao iniciar (
     with app.app_context():
         print("\n=== URL MAP ===")
         print(app.url_map)

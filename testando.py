@@ -3,16 +3,14 @@ import mysql.connector
 import pandas as pd
 import traceback
 
-# =========================
-# Flask
-# =========================
+
 app = Flask(__name__)
 app.url_map.strict_slashes = False  # evita 404 por barra final
 
-# --- CORS (permite chamadas de outras portas/hosts para /api/*) ---
+# --- CORS 
 @app.after_request
 def add_cors_headers(resp):
-    # Libera GET/OPTIONS para qualquer origem nas rotas /api/*
+    
     if request.path.startswith("/api/"):
         origin = request.headers.get("Origin", "*")
         resp.headers["Access-Control-Allow-Origin"] = origin
@@ -24,13 +22,13 @@ def add_cors_headers(resp):
 
 @app.route("/api/<path:_>", methods=["OPTIONS"])
 def cors_preflight(_):
-    # Responde preflight (por segurança, embora GET geralmente não precise)
+  
     r = jsonify({"ok": True})
     return r, 204
 
-# =========================
+
 # MySQL
-# =========================
+
 DB_CONFIG = dict(
     host="127.0.0.1",
     port=3306,
@@ -45,7 +43,7 @@ DB_CONFIG = dict(
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
-# Helper: executa SQL e devolve DataFrame (sem warnings do pandas)
+#  executa SQL e devolve DataFrame 
 def query_df(sql, params=None):
     conn = get_db()
     try:
@@ -75,27 +73,27 @@ def table_columns(table_name):
 def log_request():
     print(f"[REQ] {request.method} {request.url}  Host: {request.host}  Path: {request.path}")
 
-# ---- 404 que mostra o caminho pedido ----
+
 @app.errorhandler(404)
 def not_found(e):
     msg = f"404 (do Flask): você pediu path '{request.path}' neste host/porta '{request.host}'."
     print("[404]", msg)
     return msg, 404
 
-# ---- rota de vida ----
+
 @app.route("/ping")
 def ping():
     return "pong", 200
 
-# ---- página inicial ----
+
 @app.route("/")
 def index():
-    # renderiza templates/index.html
+    
     return render_template("index.html")
 
-# =============================
+
 # 1) Histórico anual
-# =============================
+
 @app.route("/api/incidencia/anual")
 def incidencia_anual():
     try:
@@ -127,13 +125,13 @@ def incidencia_anual():
         traceback.print_exc()
         return jsonify({"error": "incidencia_anual failed"}), 500
 
-# =============================
+
 # 2) Preditivo até 2033
-# =============================
+
 @app.route("/api/preditivo/anual")
 def preditivo_anual():
     try:
-        modelo = request.args.get("modelo", "Prophet")  # Prophet | ARIMA | ETS etc.
+        modelo = request.args.get("modelo", "Prophet")  #  ARIMA | ETS etc.
 
         sql = """
             SELECT year AS ano, model AS modelo, point, lo95, hi95
@@ -153,9 +151,9 @@ def preditivo_anual():
         traceback.print_exc()
         return jsonify({"error": "preditivo_anual failed"}), 500
 
-# =============================
+
 # 3) Correlação UV × Casos
-# =============================
+
 @app.route("/api/correlacao/uv-incidencia")
 def correlacao_uv():
     try:
@@ -181,7 +179,7 @@ def correlacao_uv():
                     .rename(columns={"size": "casos"})
         )
 
-        # 3.2) UV por ano (tenta detectar automaticamente)
+        # 3.2) UV por ano 
         cols = table_columns("resultadosprevisoes_cancer_pele")
 
         year_col = "year" if "year" in cols else ("ano" if "ano" in cols else None)
@@ -202,7 +200,7 @@ def correlacao_uv():
                   AND {uv_col} <> ''
             """
             params_uv = (start, end)
-        else:  # ano é varchar
+        else:  
             sql_uv = f"""
                 SELECT {year_col} AS ano_raw, {uv_col} AS uv_raw
                 FROM resultadosprevisoes_cancer_pele
@@ -241,9 +239,9 @@ def correlacao_uv():
         traceback.print_exc()
         return jsonify({"error": "correlacao_uv failed"}), 500
 
-# =============================
+
 # MAIN
-# =============================
+
 if __name__ == "__main__":
     with app.app_context():
         print("\n=== URL MAP (testando.py) ===")
