@@ -242,7 +242,7 @@ def correlacao_uv():
 
 # MAIN
 
-if __name__ == "__main__":
+if __name__ == "__main__":   
     with app.app_context():
         print("\n=== URL MAP (testando.py) ===")
         print(app.url_map)

@@ -312,7 +312,7 @@ def incidencia_anual():
 
 @app.route("/api/preditivo/anual")
 def preditivo_anual():
-    modelo = request.args.get("modelo", "Prophet")  # ARIMA | ETS
+    modelo = request.args.get("modelo", "ARIMA")  # ARIMA | ETS
     conn = get_db()
     try:
         df = pd.read_sql("""

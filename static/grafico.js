@@ -142,10 +142,10 @@
     if (!canvas) return;
     try {
       let got = null;
-      for (const m of ["Prophet", "ARIMA", "ETS"]) {
+      for (const m of [ "ARIMA", "ETS"]) {
         try { got = await tryModelo(m); break; } catch {}
       }
-      if (!got) throw new Error("Nenhum modelo (Prophet/ARIMA/ETS) retornou dados.");
+      if (!got) throw new Error("Nenhum modelo (ARIMA/ETS) retornou dados.");
 
       const { modelo, data } = got;
       const anos = data.map(d => d.ano);
@@ -179,7 +179,7 @@
       if (sel && !sel._bound) {
         sel._bound = true;
         sel.addEventListener("change", async (e) => {
-          const chosen = e.target.value || "Prophet";
+          const chosen = e.target.value || "Arima";
           try {
             const d = await getJSON(`/api/preditivo/anual?modelo=${encodeURIComponent(chosen)}`);
             if (!Array.isArray(d) || d.length === 0)

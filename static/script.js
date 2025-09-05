@@ -3,7 +3,7 @@
 // ===== Smooth scroll robusto 
 (() => {
   const HEADER_HEIGHT =
-    document.querySelector('.site-header')?.offsetHeight || 0; // ajuste se tiver header fixo
+    document.querySelector('.site-header')?.offsetHeight || 0; 
   const DURATION = 800; // ms (reduzir ajuda a tirar “travadinhas”)
   let rafId = null;
 

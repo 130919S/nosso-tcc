@@ -332,9 +332,9 @@
 <script>
     function enviarLocalizacao() {
       const email = document.getElementById('email').value.trim();
-      const cep = document.getElementById('cep').value.trim();
+      //const cep = document.getElementById('cep').value.trim(); // 
 
-      if (!email || !cep) {
+      if (!email ) {
         mostrarMensagem('Por favor, preencha todos os campos.', true);
         return;
       }
@@ -465,6 +465,8 @@
     <div id="resultado-quiz"></div>
   </section>
 </section>
+
+
 <section id="custos-pele" class="custos-pele">
   <div class="container-custos">
     <h2>Quanto custa tratar câncer de pele?</h2>
