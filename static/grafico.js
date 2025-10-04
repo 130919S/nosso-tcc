@@ -1,5 +1,7 @@
 // static/grafico.js
 (() => {
+  "use strict";
+
   // ===== Debug OFF =====
   const DEBUG = false;
 
@@ -27,7 +29,6 @@
             <h3 style="margin:0;">Modelo Preditivo até 2033</h3>
             <label><strong>Modelo:</strong></label>
             <select id="modelo">
-             
               <option>ARIMA</option>
               <option>ETS</option>
             </select>
@@ -55,7 +56,6 @@
             <h3 style="margin:0;">Modelo Preditivo até 2033</h3>
             <label><strong>Modelo:</strong></label>
             <select id="modelo">
-              
               <option>ARIMA</option>
               <option>ETS</option>
             </select>
@@ -72,11 +72,8 @@
     }
   }
 
-  // ---------- base da API ----------
-  const API =
-    location.port === "5056" || location.port === "5000"
-      ? location.origin
-      : "http://127.0.0.1:5056";
+  // ---------- base da API (sempre o host/porta atual; permite override via window.API_BASE) ----------
+  const API = (window.API_BASE ?? window.location.origin).replace(/\/$/, "");
   logLine(`API base: ${API}`);
 
   // ---------- Chart.js ----------
@@ -84,7 +81,7 @@
     console.error("Chart.js NÃO está carregado.");
     return;
   } else {
-    // deixa o Chart respeitar o tamanho do CSS 
+    // deixa o Chart respeitar o tamanho do CSS
     Chart.defaults.maintainAspectRatio = false;
     Chart.defaults.elements.point.radius = 2;
     Chart.defaults.elements.line.tension = 0.25;
@@ -94,12 +91,15 @@
   async function getJSON(path) {
     const url = `${API}${path}`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`GET ${url} -> ${res.status}`);
+    if (!res.ok) {
+      console.error(`GET ${url} -> ${res.status}`);
+      throw new Error(`GET ${url} -> ${res.status}`);
+    }
     return res.json();
   }
   const el = (id) => document.getElementById(id);
   function showError(where, err) {
-    console.error(`[ERRO] ${where}:`, err);     
+    console.error(`[ERRO] ${where}:`, err);
   }
 
   // ---------- 1) Histórico ----------
@@ -142,7 +142,7 @@
     if (!canvas) return;
     try {
       let got = null;
-      for (const m of [ "ARIMA", "ETS"]) {
+      for (const m of ["ARIMA", "ETS"]) {
         try { got = await tryModelo(m); break; } catch {}
       }
       if (!got) throw new Error("Nenhum modelo (ARIMA/ETS) retornou dados.");
@@ -179,7 +179,7 @@
       if (sel && !sel._bound) {
         sel._bound = true;
         sel.addEventListener("change", async (e) => {
-          const chosen = e.target.value || "Arima";
+          const chosen = e.target.value || "ARIMA";
           try {
             const d = await getJSON(`/api/preditivo/anual?modelo=${encodeURIComponent(chosen)}`);
             if (!Array.isArray(d) || d.length === 0)
@@ -254,7 +254,7 @@
     } catch (err) { showError("Correlação UV × Casos", err); }
   }
 
-  
+  // ---------- boot ----------
   document.addEventListener("DOMContentLoaded", () => {
     ensureGraphSection();
     renderHistorico();
